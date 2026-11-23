@@ -397,27 +397,32 @@
       function logMove(type, desc, amount) { logs.unshift({ date: new Date().toLocaleString('ar-EG'), type, desc, amount }); }
 
       function openView(id, t) {
-        document.getElementById('dashboard').style.display = 'none';
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('btnHome').style.display = 'inline-block';
-        if (id === 'v-pos' && t) {
-          document.getElementById('invType').value = t;
-          const names = { sale: 'فاتورة مبيعات', sale_return: 'مرتجع مبيعات', purchase: 'فاتورة مشتريات', purchase_return: 'مرتجع مشتريات' };
-          document.getElementById('posTitle').innerText = names[t];
-        }
-        if (id === 'v-set') {
-          document.getElementById('setStoreName').value = storeInfo.name; document.getElementById('setStorePhone').value = storeInfo.phone;
-          document.getElementById('setStoreAddress').value = storeInfo.address; document.getElementById('setStoreFooter').value = storeInfo.footer;
-          document.getElementById('setAdminPass').value = storeInfo.adminPass || '1234'; document.getElementById('setCashierPass').value = storeInfo.cashierPass || '0000';
-        }
-        render();
-      }
-      function goHome() {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById('dashboard').style.display = 'block';
-        document.getElementById('btnHome').style.display = 'none';
-      }
+  document.getElementById('dashboard').style.display = 'none';
+  document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'block';
+  document.getElementById('btnHome').style.display = 'inline-block';
+  if (id === 'v-pos' && t) {
+    document.getElementById('invType').value = t;
+    const n = { sale: 'فاتورة مبيعات', sale_return: 'مرتجع مبيعات', purchase: 'فاتورة مشتريات', purchase_return: 'مرتجع مشتريات' };
+    document.getElementById('posTitle').innerText = n[t];
+  }
+  if (id === 'v-set') {
+    document.getElementById('setStoreName').value = storeInfo.name;
+    document.getElementById('setStorePhone').value = storeInfo.phone;
+    document.getElementById('setStoreAddress').value = storeInfo.address;
+    document.getElementById('setStoreFooter').value = storeInfo.footer;
+    document.getElementById('setAdminPass').value = storeInfo.adminPass || '1234';
+    document.getElementById('setCashierPass').value = storeInfo.cashierPass || '0000';
+  }
+  render();
+}
+function goHome() {
+  document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('btnHome').style.display = 'none';
+}
+
       document.querySelectorAll('.tile').forEach(el => el.addEventListener('click', () => openView(el.getAttribute('data-v'), el.getAttribute('data-t'))));
       document.getElementById('btnHome').addEventListener('click', goHome);
       document.getElementById('bHome').addEventListener('click', goHome);
