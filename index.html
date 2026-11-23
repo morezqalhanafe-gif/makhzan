@@ -120,211 +120,125 @@
       <div class="grid-tiles">
         <div class="tile c-purple" data-v="v-acc"><div><span class="t-title">العملاء والموردين</span><span class="t-sub">كشوف الحسابات</span></div><span class="t-ico">👥</span></div>
         <div class="tile c-emerald admin-only" data-v="v-safe"><div><span class="t-title">الخزينة والمصروفات</span><span class="t-sub">الدرج والخزنة</span></div><span class="t-ico">💰</span></div>
-  <!-- شاشة نقطة البيع والفواتير -->
-  <div id="v-pos" class="view">
-    <div class="win">
-      <div class="win-head"><span id="posTitle">فاتورة مبيعات</span></div>
-      <div class="win-body">
-        <div class="pos-bar">
-          <div><small>الإجمالي المطلوب</small><div id="posTotal" class="pos-total">0.00</div></div>
-          <div style="width:45%"><label>نوع الفاتورة</label>
-            <select id="invType">
-              <option value="sale">مبيعات</option>
-              <option value="sale_return">مرتجع مبيعات</option>
-              <option value="purchase">مشتريات</option>
-              <option value="purchase_return">مرتجع مشتريات</option>
-            </select>
-          </div>
-        </div>
-        <div class="g2">
-          <div><label>طريقة الدفع</label><select id="payMethod"><option value="cash">نقدي (الدرج)</option><option value="credit">آجل (على الحساب)</option></select></div>
-          <div><label>العميل / المورد</label><select id="invAccount"><option value="">-- عميل نقدي عام --</option></select></div>
-        </div>
-        <label>إضافة صنف بالاسم أو الباركود</label>
-        <div class="igroup">
-          <select id="invProdSelect"></select>
-          <input type="number" id="invQtyInput" value="1" min="0.1" step="any" style="width:80px">
-          <button type="button" id="btnAddCart" class="btn c-green">إضافة</button>
-          <button type="button" id="scanInv" class="btn c-blue">📷</button>
-        </div>
-        <div class="tbl-wrap">
-          <table><thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table>
-        </div>
-        <div class="g2" style="margin-top:12px;">
-          <button type="button" id="btnSaveInv" class="btn c-green">💾 حفظ وترحيل الفاتورة</button>
-          <button type="button" id="btnClearCart" class="btn c-red">🗑️ إفراغ السلة</button>
-        </div>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سهل لإدارة الأعمال</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://sheetjs.com"></script>
+  <script src="https://unpkg.com"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif; }
+    body { margin: 0; background-color: #0d3b31; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar { background: #0a6852; color: white; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #148f72; position: sticky; top: 0; z-index: 100; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo { background: #16a34a; border: 2px solid #a7f3d0; border-radius: 4px; padding: 4px 10px; font-weight: bold; font-size: 18px; }
+    .brand h1 { margin: 0; font-size: 15px; }
+    .brand p { margin: 0; font-size: 11px; color: #a7f3d0; }
+    .btn-top { background: #064e3b; color: white; border: 1px solid #34d399; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .dashboard { flex: 1; padding: 14px; max-width: 1000px; margin: 0 auto; width: 100%; }
+    .group { margin-bottom: 18px; }
+    .group-title { color: #6ee7b7; font-size: 13px; font-weight: bold; margin-bottom: 8px; border-right: 3px solid #10b981; padding-right: 6px; }
+    .grid-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    @media (min-width: 650px) { .grid-tiles { grid-template-columns: repeat(4, 1fr); } }
+    .tile { height: 82px; border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; color: white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.18); }
+    .tile.wide { grid-column: span 2; }
+    .tile:active { transform: scale(0.97); }
+    .t-title { font-size: 13px; font-weight: bold; display: block; }
+    .t-sub { font-size: 10px; opacity: 0.85; display: block; margin-top: 2px; }
+    .t-ico { font-size: 26px; }
+    .c-green { background: #16a34a; } .c-teal { background: #0d9488; } .c-emerald { background: #059669; }
+    .c-blue { background: #0284c7; } .c-indigo { background: #2563eb; } .c-purple { background: #7c3aed; }
+    .c-orange { background: #ea580c; } .c-amber { background: #d97706; } .c-red { background: #dc2626; } .c-cyan { background: #0891b2; } .c-slate { background: #475569; }
+    .view { display: none; background: #f0fdf4; flex: 1; padding: 12px; max-width: 1000px; margin: 0 auto; width: 100%; }
+    .view.active { display: block; }
+    .win { background: white; border: 2px solid #0a6852; border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
+    .win-head { background: #0a6852; color: white; padding: 9px 12px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
+    .win-body { padding: 12px; }
+    .pos-bar { background: #dcfce7; border: 2px solid #16a34a; border-radius: 4px; padding: 10px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .pos-total { background: #16a34a; color: white; padding: 6px 16px; border-radius: 4px; font-size: 22px; font-weight: bold; font-family: monospace; }
+    input, select { width: 100%; padding: 9px; margin-bottom: 9px; border: 1px solid #94a3b8; border-radius: 4px; font-size: 14px; background: #fff; }
+    label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #0a6852; }
+    .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; width: auto; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .igroup { display: flex; gap: 6px; margin-bottom: 9px; }
+    .igroup input, .igroup select { margin-bottom: 0; }
+    .igroup button { width: auto; padding: 0 12px; }
+    .tbl-wrap { overflow-x: auto; border: 1px solid #cbd5e1; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; }
+    th { background: #0a6852; color: white; padding: 7px; border: 1px solid #064e3b; white-space: nowrap; }
+    td { padding: 7px; border: 1px solid #cbd5e1; white-space: nowrap; }
+    .low { background: #fee2e2 !important; color: #991b1b; font-weight: bold; }
+    .botbar { background: #07241e; color: #a7f3d0; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 11px; border-top: 1px solid #134e4a; position: sticky; bottom: 0; z-index: 90; }
+    .pill { background: #0d3b31; padding: 4px 8px; border-radius: 4px; border: 1px solid #148f72; }
+    body.role-cashier .admin-only { display: none !important; }
+    #lockBox, #scanModal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
+    .lock-card { background: white; padding: 25px; border-radius: 6px; width: 100%; max-width: 350px; text-align: center; }
+    #reader { width: 100%; max-width: 380px; background: white; border-radius: 6px; overflow: hidden; }
+    #printArea { display: none; }
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; color: black; direction: rtl; }
+    }
+  </style>
+</head>
+<body>
+  <div id="lockBox">
+    <div class="lock-card">
+      <div class="logo" style="display:inline-block; color:white; margin-bottom:10px;">سهل</div>
+      <h3 style="color:#0a6852; margin:0 0 6px;">تبديل المستخدم / فتح القفل</h3>
+      <p style="font-size:12px; color:#64748b; margin-bottom:14px;">المدير: <b>1234</b> &nbsp;|&nbsp; الكاشير: <b>0000</b></p>
+      <input type="password" inputmode="numeric" id="unlockPass" placeholder="أدخل رمز الدخول">
+      <button type="button" id="btnUnlock" class="btn c-green">دخول للنظام</button>
+    </div>
+  </div>
+  <div id="scanModal"><div id="reader"></div><button type="button" id="btnCloseScan" class="btn c-red" style="width:auto; margin-top:12px;">إغلاق الكاميرا ✖</button></div>
+  <div id="printArea"></div>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">سهل</div>
+      <div>
+        <h1 id="topStoreName">سهل لإدارة الأعمال</h1>
+        <p id="roleBadge" style="color:#fde047; font-weight:bold;">الصلاحية: مدير النظام</p>
       </div>
     </div>
+    <div style="display:flex; gap:6px;">
+      <button type="button" id="btnHome" class="btn-top" style="display:none;">🏠 الرئيسية</button>
+      <button type="button" id="btnLock" class="btn-top">👤 تبديل مستخدم</button>
+    </div>
   </div>
 
-  <!-- شاشة سجل الفواتير -->
-  <div id="v-log" class="view">
-    <div class="win">
-      <div class="win-head"><span>سجل الفواتير والحركة اليومية</span></div>
-      <div class="win-body">
-        <div class="tbl-wrap">
-          <table><thead><tr><th>التاريخ</th><th>النوع</th><th>الطرف</th><th>الدفع</th><th>الإجمالي</th><th>طباعة</th></tr></thead><tbody id="invLogBody"></tbody></table>
-        </div>
+  <!-- الشاشة الرئيسية -->
+  <div id="dashboard" class="dashboard">
+    <div class="group">
+      <div class="group-title">المبيعات والمشتريات</div>
+      <div class="grid-tiles">
+        <div class="tile c-green" data-v="v-pos" data-t="sale"><div><span class="t-title">فاتورة مبيعات</span><span class="t-sub">كاشير / آجل</span></div><span class="t-ico">🛒</span></div>
+        <div class="tile c-orange" data-v="v-pos" data-t="sale_return"><div><span class="t-title">مرتجع مبيعات</span><span class="t-sub">استرجاع بضاعة</span></div><span class="t-ico">↩️</span></div>
+        <div class="tile c-blue admin-only" data-v="v-pos" data-t="purchase"><div><span class="t-title">فاتورة مشتريات</span><span class="t-sub">توريد للمخزن</span></div><span class="t-ico">🚚</span></div>
+        <div class="tile c-amber admin-only" data-v="v-pos" data-t="purchase_return"><div><span class="t-title">مرتجع مشتريات</span><span class="t-sub">رد لمورد</span></div><span class="t-ico">📦</span></div>
+        <div class="tile c-teal wide" data-v="v-log"><div><span class="t-title">سجل الفواتير والحركة اليومية</span><span class="t-sub">استعراض وطباعة الفواتير</span></div><span class="t-ico">🧾</span></div>
       </div>
     </div>
-  </div>
-
-  <!-- شاشة تعريف الأصناف -->
-  <div id="v-add" class="view">
-    <div class="win">
-      <div class="win-head"><span>تعريف صنف جديد بالمخزن</span></div>
-      <div class="win-body">
-        <label>الباركود</label>
-        <div class="igroup"><input type="text" id="pCode" placeholder="امسح أو اكتب الباركود"><button type="button" id="scanAdd" class="btn c-blue">📷 مسح</button></div>
-        <label>اسم الصنف *</label><input type="text" id="pName" placeholder="مثال: سكر أبيض 1 كجم">
-        <div class="g2">
-          <div><label>المخزن</label><select id="pStore"><option value="الرئيسي">الرئيسي</option><option value="الفرعي">الفرعي</option></select></div>
-          <div><label>الكمية الافتتاحية</label><input type="number" id="pQty" placeholder="0"></div>
-        </div>
-        <div class="g3">
-          <div><label>سعر الشراء</label><input type="number" id="pBuy" step="any" placeholder="0.00"></div>
-          <div><label>سعر البيع</label><input type="number" id="pSell" step="any" placeholder="0.00"></div>
-          <div><label>الصلاحية</label><input type="date" id="pExp"></div>
-        </div>
-        <button type="button" id="btnAddProd" class="btn c-emerald">➕ حفظ الصنف في السحابة</button>
+    <div class="group">
+      <div class="group-title">البضاعة وإدارة المخازن</div>
+      <div class="grid-tiles">
+        <div class="tile c-emerald admin-only" data-v="v-add"><div><span class="t-title">تعريف الأصناف</span><span class="t-sub">إضافة / باركود</span></div><span class="t-ico">➕</span></div>
+        <div class="tile c-cyan" data-v="v-inv"><div><span class="t-title">جرد المخزن</span><span class="t-sub">الأرصدة والأسعار</span></div><span class="t-ico">📋</span></div>
+        <div class="tile c-red admin-only" data-v="v-adj"><div><span class="t-title">تسوية وتحويل</span><span class="t-sub">التلفيات والمخازن</span></div><span class="t-ico">⚖️</span></div>
+        <div class="tile c-indigo admin-only" data-v="v-xls"><div><span class="t-title">بيانات Excel</span><span class="t-sub">استيراد وتصدير</span></div><span class="t-ico">📊</span></div>
       </div>
     </div>
-  </div>
-
-  <!-- شاشة جرد المخزن -->
-  <div id="v-inv" class="view">
-    <div class="win">
-      <div class="win-head"><span>جرد المخزن والأرصدة</span></div>
-      <div class="win-body">
-        <div class="igroup"><input type="text" id="searchBox" placeholder="ابحث بالاسم أو الباركود..."><button type="button" id="scanSearch" class="btn c-blue">📷</button></div>
-        <div class="tbl-wrap">
-          <table><thead><tr><th>الباركود</th><th>الصنف</th><th>المخزن</th><th>الكمية</th><th>الشراء</th><th>البيع</th><th>حذف</th></tr></thead><tbody id="invBody"></tbody></table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- شاشة التسوية والتحويل -->
-  <div id="v-adj" class="view">
-    <div class="win">
-      <div class="win-head"><span>تسوية التلفيات والتحويل بين المخازن</span></div>
-      <div class="win-body">
-        <label>اختر الصنف</label><select id="adjProd"></select>
-        <div class="g2">
-          <div><label>نوع العملية</label><select id="adjType"><option value="damage">تسجيل تالف / هالك</option><option value="sub">تحويل للمخزن الفرعي</option><option value="main">تحويل للمخزن الرئيسي</option></select></div>
-          <div><label>الكمية</label><input type="number" id="adjQty" min="1"></div>
-        </div>
-        <button type="button" id="btnAdj" class="btn c-red">تنفيذ التسوية</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- شاشة Excel -->
-  <div id="v-xls" class="view">
-    <div class="win">
-      <div class="win-head"><span>استيراد وتصدير بيانات Excel</span></div>
-      <div class="win-body">
-        <button type="button" id="btnExportXls" class="btn c-green" style="margin-bottom:12px;">📤 تصدير الأصناف إلى ملف Excel</button>
-        <label>استيراد أصناف من ملف Excel (الأعمدة: barcode, name, qty, buy, sell)</label>
-        <input type="file" id="importXlsFile" accept=".xlsx,.xls">
-      </div>
-    </div>
-  </div>
-
-  <!-- شاشة العملاء والموردين -->
-  <div id="v-acc" class="view">
-    <div class="win">
-      <div class="win-head"><span>العملاء والموردين</span></div>
-      <div class="win-body">
-        <div class="g3">
-          <input type="text" id="accName" placeholder="الاسم">
-          <select id="accType"><option value="عميل">عميل</option><option value="مورد">مورد</option></select>
-          <input type="number" id="accBal" placeholder="الرصيد الافتتاحي">
-        </div>
-        <button type="button" id="btnAddAcc" class="btn c-purple">➕ إضافة حساب</button>
-        <div class="tbl-wrap">
-          <table><thead><tr><th>الاسم</th><th>النوع</th><th>الرصيد</th><th>سداد / تحصيل</th></tr></thead><tbody id="accBody"></tbody></table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- شاشة الخزينة -->
-  <div id="v-safe" class="view">
-    <div class="win">
-      <div class="win-head"><span>الخزينة والمصروفات</span></div>
-      <div class="win-body">
-        <div class="g2" style="margin-bottom:10px;">
-          <div class="pos-bar"><span>الدرج:</span><strong id="drawerVal">0.00</strong></div>
-          <div class="pos-bar"><span>الخزنة الرئيسية:</span><strong id="safeVal">0.00</strong></div>
-        </div>
-        <div class="g3">
-          <select id="safeOp"><option value="expense">مصروفات من الدرج</option><option value="to_safe">ترحيل من الدرج للخزنة</option><option value="deposit">إيداع بالخزنة</option></select>
-          <input type="number" id="safeAmt" placeholder="المبلغ">
-          <input type="text" id="safeNote" placeholder="البيان / السبب">
-        </div>
-        <button type="button" id="btnSafeOp" class="btn c-emerald">تنفيذ الحركة المالية</button>
-        <div class="tbl-wrap">
-          <table><thead><tr><th>التاريخ</th><th>الحركة</th><th>البيان</th><th>المبلغ</th></tr></thead><tbody id="safeLogBody"></tbody></table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- شاشة التقارير -->
-  <div id="v-rep" class="view">
-    <div class="win">
-      <div class="win-head"><span>ملخص التقارير والأرباح</span></div>
-      <div class="win-body" id="repSummary"></div>
-    </div>
-  </div>
-
-  <!-- شاشة الإعدادات -->
-  <div id="v-set" class="view">
-    <div class="win">
-      <div class="win-head"><span>إعدادات النظام والمحل</span></div>
-      <div class="win-body">
-        <label>اسم النشاط التجاري</label><input type="text" id="setStoreName">
-        <div class="g2">
-          <div><label>رقم الهاتف</label><input type="text" id="setStorePhone"></div>
-          <div><label>العنوان</label><input type="text" id="setStoreAddress"></div>
-        </div>
-        <label>رسالة أسفل الفاتورة</label><input type="text" id="setStoreFooter">
-        <div class="g2">
-          <div><label>رمز دخول المدير</label><input type="text" id="setAdminPass"></div>
-          <div><label>رمز دخول الكاشير</label><input type="text" id="setCashierPass"></div>
-        </div>
-        <button type="button" id="btnSaveSettings" class="btn c-slate">💾 حفظ ومزامنة الإعدادات</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="botbar">
-    <span id="cloudStatus" class="pill">⏳ جاري الاتصال بالسحابة...</span>
-    <span id="bHome" class="pill" style="cursor:pointer;">🏠 الرئيسية</span>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://gstatic.com";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://gstatic.com";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyATwnDXmn0Lu3fPMndKtjI-dokqruvM3N4",
-      authDomain: "://firebaseapp.com",
-      projectId: "makhzana",
-      storageBucket: "makhzana.firebasestorage.app",
-      messagingSenderId: "480829856218",
-      appId: "1:480829856218:web:7f92eb92c4dca33ecd08e3"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const stateDocRef = doc(db, "makhzan_data", "main_store");
-
-    let products = JSON.parse(localStorage.getItem('sahl_products')) || [];
-    let accounts = JSON.parse(localStorage.getItem('sahl_accounts')) || [];
-    let invoices = JSON.parse(localStorage.getItem('sahl_invoices')) || [];
-    let logs = JSON.parse(localStorage.getItem('sahl_treasury_log')) || [];
-    let bal = JSON.parse(localStorage.getItem('sahl_balances')) || { drawer: 0, mainSafe: 0, damagesCost: 0 };
-    let storeInfo = JSON.parse(localStorage.getItem('sahl_store_info')) || {
+    <div class="group">
+      <div class="group-title">الحسابات والخزينة والتقارير</div>
+      <div class="grid-tiles">
+        <div class="tile c-purple" data-v="v-acc"><div><span class="t-title">العملاء والموردين</span><span class="t-sub">كشوف الحسابات</span></div><span class="t-ico">👥</span></div>
+        <div class="tile c-emerald admin-only" data-v="v-safe"><div><span class="t-title">الخزينة والمصروفات</span><span class="t-sub">الدرج والخزنة</span></div><span class="t-ico">💰</span></div>
