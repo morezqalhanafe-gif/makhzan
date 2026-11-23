@@ -1,194 +1,142 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المخزن المتكامل</title>
-    <style>
-        body { font-family: -apple-system, Tahoma, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 0 0 75px 0; }
-        .header { background: #1e3a8a; color: white; padding: 15px; text-align: center; font-size: 19px; font-weight: bold; }
-        .container { max-width: 650px; margin: 15px auto; padding: 0 12px; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 15px; }
-        h2 { color: #1e3a8a; font-size: 17px; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
-        input, select { width: 100%; padding: 12px; margin: 6px 0; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; margin-top: 6px; }
-        .btn-green { background-color: #16a34a; }
-        .btn-blue { background-color: #2563eb; }
-        .btn-orange { background-color: #d97706; }
-        .btn-sm { padding: 6px 10px; font-size: 12px; width: auto; margin: 0; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
-        th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: center; }
-        th { background-color: #f8fafc; color: #334155; }
-        .warning { background-color: #fee2e2; color: #b91c1c; font-weight: bold; }
-        .badge-credit { background: #fef3c7; color: #b45309; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
-        .badge-cash { background: #dcfce7; color: #15803d; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: #eff6ff; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #bfdbfe; }
-        .stat-num { font-size: 19px; font-weight: bold; color: #1d4ed8; margin-top: 5px; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #cbd5e1; z-index: 100; }
-        .nav-item { flex: 1; padding: 12px 2px; text-align: center; font-size: 12px; font-weight: bold; color: #64748b; cursor: pointer; }
-        .nav-item.active { color: #1e3a8a; border-top: 3px solid #1e3a8a; background: #f8fafc; }
-        .section { display: none; }
-        .section.active { display: block; }
-        #loginScreen { position: fixed; inset: 0; background: #1e3a8a; z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-box { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 350px; text-align: center; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سهل لإدارة الأعمال</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://sheetjs.com"></script>
+  <script src="https://unpkg.com"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif; }
+    body { margin: 0; background-color: #0d3b31; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .topbar { background: #0a6852; color: white; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #148f72; position: sticky; top: 0; z-index: 100; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo { background: #16a34a; border: 2px solid #a7f3d0; border-radius: 4px; padding: 4px 10px; font-weight: bold; font-size: 18px; }
+    .brand h1 { margin: 0; font-size: 15px; }
+    .brand p { margin: 0; font-size: 11px; color: #a7f3d0; }
+    .btn-top { background: #064e3b; color: white; border: 1px solid #34d399; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
+
+    .dashboard { flex: 1; padding: 14px; max-width: 1000px; margin: 0 auto; width: 100%; }
+    .group { margin-bottom: 18px; }
+    .group-title { color: #6ee7b7; font-size: 13px; font-weight: bold; margin-bottom: 8px; border-right: 3px solid #10b981; padding-right: 6px; }
+    .grid-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    @media (min-width: 650px) { .grid-tiles { grid-template-columns: repeat(4, 1fr); } }
+
+    .tile {
+      height: 82px; border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;
+      color: white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.18);
+    }
+    .tile.wide { grid-column: span 2; }
+    .tile:active { transform: scale(0.97); }
+    .t-title { font-size: 13px; font-weight: bold; display: block; }
+    .t-sub { font-size: 10px; opacity: 0.85; display: block; margin-top: 2px; }
+    .t-ico { font-size: 26px; }
+
+    .c-green { background: #16a34a; } .c-teal { background: #0d9488; } .c-emerald { background: #059669; }
+    .c-blue { background: #0284c7; } .c-indigo { background: #2563eb; } .c-purple { background: #7c3aed; }
+    .c-orange { background: #ea580c; } .c-amber { background: #d97706; } .c-red { background: #dc2626; } .c-cyan { background: #0891b2; } .c-slate { background: #475569; }
+
+    .view { display: none; background: #f0fdf4; flex: 1; padding: 12px; max-width: 1000px; margin: 0 auto; width: 100%; }
+    .view.active { display: block; }
+    .win { background: white; border: 2px solid #0a6852; border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
+    .win-head { background: #0a6852; color: white; padding: 9px 12px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
+    .win-body { padding: 12px; }
+
+    .pos-bar { background: #dcfce7; border: 2px solid #16a34a; border-radius: 4px; padding: 10px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .pos-total { background: #16a34a; color: white; padding: 6px 16px; border-radius: 4px; font-size: 22px; font-weight: bold; font-family: monospace; }
+
+    input, select { width: 100%; padding: 9px; margin-bottom: 9px; border: 1px solid #94a3b8; border-radius: 4px; font-size: 14px; background: #fff; }
+    label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #0a6852; }
+    .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; width: auto; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .igroup { display: flex; gap: 6px; margin-bottom: 9px; }
+    .igroup input, .igroup select { margin-bottom: 0; }
+    .igroup button { width: auto; padding: 0 12px; }
+
+    .tbl-wrap { overflow-x: auto; border: 1px solid #cbd5e1; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; }
+    th { background: #0a6852; color: white; padding: 7px; border: 1px solid #064e3b; white-space: nowrap; }
+    td { padding: 7px; border: 1px solid #cbd5e1; white-space: nowrap; }
+    .low { background: #fee2e2 !important; color: #991b1b; font-weight: bold; }
+
+    .botbar { background: #07241e; color: #a7f3d0; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 12px; border-top: 1px solid #134e4a; position: sticky; bottom: 0; z-index: 90; }
+    .pill { background: #0d3b31; padding: 4px 10px; border-radius: 4px; border: 1px solid #148f72; }
+
+    /* إخفاء عناصر المدير عن الكاشير */
+    body.role-cashier .admin-only { display: none !important; }
+
+    #lockBox, #scanModal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
+    .lock-card { background: white; padding: 25px; border-radius: 6px; width: 100%; max-width: 350px; text-align: center; }
+    #reader { width: 100%; max-width: 380px; background: white; border-radius: 6px; overflow: hidden; }
+    #printArea { display: none; }
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; color: black; direction: rtl; }
+      #printArea table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+      #printArea th, #printArea td { border: 1px solid #000; padding: 8px; text-align: right; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="loginScreen">
-    <div class="login-box">
-        <h2 style="border:none; margin-bottom:10px;">🔒 نظام إدارة المخزن</h2>
-        <p style="font-size:14px; color:#64748b;">أدخل كلمة المرور (1234)</p>
-        <input type="password" id="passInput" placeholder="كلمة المرور">
-        <button class="btn-blue" onclick="checkLogin()">دخول للنظام</button>
+  <!-- نافذة التبديل بين المدير والكاشير -->
+  <div id="lockBox">
+    <div class="lock-card">
+      <div class="logo" style="display:inline-block; color:white; margin-bottom:10px;">سهل</div>
+      <h3 style="color:#0a6852; margin:0 0 6px;">تبديل المستخدم / فتح القفل</h3>
+      <p style="font-size:12px; color:#64748b; margin-bottom:14px;">المدير: <b>1234</b> &nbsp;|&nbsp; الكاشير: <b>0000</b></p>
+      <input type="password" inputmode="numeric" id="unlockPass" placeholder="أدخل رمز الدخول">
+      <button type="button" id="btnUnlock" class="btn c-green">دخول للنظام</button>
     </div>
-</div>
+  </div>
 
-<div class="header">📦 نظام إدارة المخزن والمبيعات</div>
+  <div id="scanModal"><div id="reader"></div><button type="button" id="btnCloseScan" class="btn c-red" style="width:auto; margin-top:12px;">إغلاق الكاميرا ✖</button></div>
+  <div id="printArea"></div>
 
-<div class="container">
-    <!-- 1. قسم المبيعات -->
-    <div id="salesSec" class="section active">
-        <div class="card">
-            <h2>🛒 تسجيل فاتورة بيع</h2>
-            <select id="sellProductSelect"></select>
-            <input type="number" id="sellQty" placeholder="الكمية المباعة">
-            <input type="text" id="customerName" placeholder="اسم العميل (مطلوب في حالة الآجل)">
-            <select id="paymentType">
-                <option value="نقدي">💵 دفع نقدي (كاش)</option>
-                <option value="آجل">📝 بيع آجل (على الحساب)</option>
-            </select>
-            <button class="btn-green" onclick="makeSale()">✅ إتمام البيع</button>
-        </div>
-        <div class="card">
-            <h2>🧾 سجل الفواتير</h2>
-            <table>
-                <thead><tr><th>العميل</th><th>الصنف</th><th>الكمية</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
-                <tbody id="salesTable"></tbody>
-            </table>
-        </div>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">سهل</div>
+      <div>
+        <h1 id="topStoreName">سهل لإدارة الأعمال</h1>
+        <p id="roleBadge" style="color:#fde047; font-weight:bold;">الصلاحية: مدير النظام</p>
+      </div>
     </div>
+    <div style="display:flex; gap:6px;">
+      <button type="button" id="btnHome" class="btn-top" style="display:none;">🏠 الرئيسية</button>
+      <button type="button" id="btnLock" class="btn-top">👤 تبديل مستخدم</button>
+    </div>
+  </div>
 
-    <!-- 2. قسم المخزن -->
-    <div id="stockSec" class="section">
-        <div class="card">
-            <h2>➕ إضافة صنف للمخزن</h2>
-            <input type="text" id="pName" placeholder="اسم الصنف (مثال: زيت 1 لتر)">
-            <input type="number" id="pQty" placeholder="الكمية">
-            <input type="number" id="pBuyPrice" placeholder="سعر الشراء">
-            <input type="number" id="pSellPrice" placeholder="سعر البيع">
-            <label style="font-size:13px; color:#475569;">تاريخ الصلاحية:</label>
-            <input type="date" id="pExpiry">
-            <button class="btn-blue" onclick="addProduct()">💾 حفظ الصنف</button>
-        </div>
-        <div class="card">
-            <h2>📋 جرد المخزن الحالي</h2>
-            <table>
-                <thead><tr><th>الصنف</th><th>الرصيد</th><th>التكلفة</th><th>البيع</th><th>الصلاحية</th></tr></thead>
-                <tbody id="stockTable"></tbody>
-            </table>
-        </div>
+  <!-- الشاشة الرئيسية -->
+  <div id="dashboard" class="dashboard">
+    <div class="group">
+      <div class="group-title">المبيعات والمشتريات</div>
+      <div class="grid-tiles">
+        <div class="tile c-green" data-v="v-pos" data-t="sale"><div><span class="t-title">فاتورة مبيعات</span><span class="t-sub">كاشير / آجل</span></div><span class="t-ico">🛒</span></div>
+        <div class="tile c-orange" data-v="v-pos" data-t="sale_return"><div><span class="t-title">مرتجع مبيعات</span><span class="t-sub">استرجاع بضاعة</span></div><span class="t-ico">↩️</span></div>
+        <div class="tile c-blue admin-only" data-v="v-pos" data-t="purchase"><div><span class="t-title">فاتورة مشتريات</span><span class="t-sub">توريد للمخزن</span></div><span class="t-ico">🚚</span></div>
+        <div class="tile c-amber admin-only" data-v="v-pos" data-t="purchase_return"><div><span class="t-title">مرتجع مشتريات</span><span class="t-sub">رد لمورد</span></div><span class="t-ico">📦</span></div>
+        <div class="tile c-teal wide" data-v="v-log"><div><span class="t-title">سجل الفواتير والحركة اليومية</span><span class="t-sub">استعراض وطباعة الفواتير</span></div><span class="t-ico">🧾</span></div>
+      </div>
     </div>
 
-    <!-- 3. قسم حسابات العملاء (الآجل) -->
-    <div id="debtsSec" class="section">
-        <div class="card">
-            <h2>📒 فواتير الآجل (مديونيات العملاء)</h2>
-            <table>
-                <thead><tr><th>العميل</th><th>الصنف</th><th>المبلغ</th><th>إجراء</th></tr></thead>
-                <tbody id="debtsTable"></tbody>
-            </table>
-        </div>
+    <div class="group">
+      <div class="group-title">البضاعة وإدارة المخازن</div>
+      <div class="grid-tiles">
+        <div class="tile c-emerald admin-only" data-v="v-add"><div><span class="t-title">تعريف الأصناف</span><span class="t-sub">إضافة / باركود</span></div><span class="t-ico">➕</span></div>
+        <div class="tile c-cyan" data-v="v-inv"><div><span class="t-title">جرد المخزن</span><span class="t-sub">الأرصدة والأسعار</span></div><span class="t-ico">📋</span></div>
+        <div class="tile c-red admin-only" data-v="v-adj"><div><span class="t-title">تسوية وتحويل</span><span class="t-sub">التلفيات والمخازن</span></div><span class="t-ico">⚖️</span></div>
+        <div class="tile c-indigo admin-only" data-v="v-xls"><div><span class="t-title">بيانات Excel</span><span class="t-sub">استيراد وتصدير</span></div><span class="t-ico">📊</span></div>
+      </div>
     </div>
 
-    <!-- 4. قسم الأرباح والخزينة -->
-    <div id="reportsSec" class="section">
-        <div class="card">
-            <h2>💰 ملخص الخزينة والأرباح</h2>
-            <div class="stats-grid">
-                <div class="stat-box"><div>النقدية بالخزينة (كاش)</div><div class="stat-num" id="cashStat">0 ج</div></div>
-                <div class="stat-box" style="background:#fef3c7; border-color:#fde68a;"><div>ديون السوق (آجل)</div><div class="stat-num" style="color:#b45309;" id="creditStat">0 ج</div></div>
-                <div class="stat-box" style="background:#f0fdf4; border-color:#bbf7d0;"><div>صافي الأرباح</div><div class="stat-num" style="color:#15803d;" id="totalProfitStat">0 ج</div></div>
-                <div class="stat-box"><div>قيمة البضاعة بالمخزن</div><div class="stat-num" id="stockValueStat">0 ج</div></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('salesSec', this)">🛒 المبيعات</div>
-    <div class="nav-item" onclick="switchTab('stockSec', this)">📦 المخزن</div>
-    <div class="nav-item" onclick="switchTab('debtsSec', this)">📒 الآجل</div>
-    <div class="nav-item" onclick="switchTab('reportsSec', this)">💰 الخزينة</div>
-</div>
-
-<script>
-    const APP_PASSWORD = '1234';
-    let products = JSON.parse(localStorage.getItem('makhzan_products')) || [];
-    let sales = JSON.parse(localStorage.getItem('makhzan_sales')) || [];
-
-    function checkLogin() {
-        if (document.getElementById('passInput').value === APP_PASSWORD) {
-            document.getElementById('loginScreen').style.display = 'none';
-            renderAll();
-        } else {
-            alert("❌ كلمة المرور غير صحيحة!");
-        }
-    }
-
-    function switchTab(secId, el) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(secId).classList.add('active');
-        el.classList.add('active');
-        renderAll();
-    }
-
-    function saveLocal() {
-        localStorage.setItem('makhzan_products', JSON.stringify(products));
-        localStorage.setItem('makhzan_sales', JSON.stringify(sales));
-    }
-
-    function addProduct() {
-        let name = document.getElementById('pName').value;
-        let qty = parseFloat(document.getElementById('pQty').value);
-        let buy_price = parseFloat(document.getElementById('pBuyPrice').value);
-        let sell_price = parseFloat(document.getElementById('pSellPrice').value);
-        let expiry = document.getElementById('pExpiry').value;
-
-        if (!name || isNaN(qty) || isNaN(buy_price) || isNaN(sell_price) || !expiry) { alert("أكمل جميع الخانات!"); return; }
-        products.unshift({ id: Date.now(), name, qty, buy_price, sell_price, expiry });
-        saveLocal();
-        alert("✅ تم حفظ الصنف!");
-        document.getElementById('pName').value = ''; document.getElementById('pQty').value = '';
-        document.getElementById('pBuyPrice').value = ''; document.getElementById('pSellPrice').value = '';
-        renderAll();
-    }
-
-    function makeSale() {
-        let prodId = document.getElementById('sellProductSelect').value;
-        let qty = parseFloat(document.getElementById('sellQty').value);
-        let customer = document.getElementById('customerName').value || "عميل نقدي";
-        let payment_type = document.getElementById('paymentType').value;
-
-        if (payment_type === 'آجل' && customer === "عميل نقدي") {
-            alert("يرجى كتابة اسم العميل في حالة البيع الآجل!"); return;
-        }
-
-        let product = products.find(p => p.id == prodId);
-        if (!product || isNaN(qty) || qty <= 0 || qty > product.qty) { alert("بيانات البيع أو الكمية غير صحيحة!"); return; }
-
-        let total = qty * product.sell_price;
-        let profit = qty * (product.sell_price - product.buy_price);
-
-        product.qty -= qty;
-        sales.unshift({ id: Date.now(), customer, product_name: product.name, qty, total, profit, payment_type });
-        saveLocal();
-
-        alert("✅ تم تسجيل الفاتورة!");
-        document.getElementById('sellQty').value = '';
-        renderAll();
-    }
-
-    function collectDebt(saleId) {
+    <div class="group">
+      <div class="group-title">الحسابات والخزينة والتقارير</div>
+      <div class="grid-tiles">
