@@ -574,6 +574,20 @@ document.getElementById('repSummary').innerHTML = `<div class="pos-bar"><span>ا
         XLSX.utils.book_append_sheet(wb, ws, "Products");
         XLSX.writeFile(wb, "Sahl_Products.xlsx");
       });
+document.getElementById('importXlsFile').addEventListener('change', (e) => {
+  const file = e.target.files.item(0);
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const wb = XLSX.read(evt.target.result, { type: 'binary' });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames.at(0)]);
+    rows.forEach(r => {
+      if (r.name) products.push({ id: Date.now() + Math.random(), barcode: String(r.barcode || '-'), name: r.name, store: 'الرئيسي', qty: Number(r.qty || 0), buy: Number(r.buy || 0), sell: Number(r.sell || 0), expiry: '-' });
+    });
+    save(); alert('تم استيراد ' + rows.length + ' صنف بنجاح!');
+  };
+  reader.readAsBinaryString(file);
+});
 
       window.settleAcc = (id) => {
         const a = accounts.find(x => x.id === id);
