@@ -462,12 +462,42 @@ function goHome() {
         const q = parseFloat(document.getElementById('invQtyInput').value) || 1;
         if (!p) return;
         const price = document.getElementById('invType').value.includes('purchase') ? p.buy : p.sell;
-        const ex = cart.find(c => c.id === p.id);
-        if (ex) ex.qty += q; else cart.push({ id: p.id, name: p.name, qty: q, price, buy: p.buy });
-        renderCart();
-      });
-      document.getElementById('btnClearCart').addEventListener('click', () => { cart = []; renderCart(); });
-      function renderCart() {
+          const ex = cart.find(c => c.id === p.id);
+  if (ex) ex.qty += q; else cart.push({ id: p.id, name: p.name, qty: q, price, buy: p.buy });
+  renderCart();
+});
+document.getElementById('btnClearCart').addEventListener('click', () => { cart = []; renderCart(); });
+function renderCart() {
+  let tot = 0;
+  document.getElementById('cartBody').innerHTML = cart.map((c, idx) => { const s = c.qty * c.price; tot += s; return `<tr><td>${c.name}</td><td>${c.qty}</td><td>${c.price}</td><td>${s.toFixed(2)}</td><td><button onclick="window.delCart(${idx})" class="btn btn-sm c-red">✖</button></td></tr>`; }).join('');
+  document.getElementById('posTotal').innerText = tot.toFixed(2);
+}
+window.delCart = (i) => { cart.splice(i, 1); renderCart(); };
+
+document.getElementById('btnAddProd').addEventListener('click', () => {
+  const name = document.getElementById('pName').value.trim(); if (!name) return;
+  products.push({ id: Date.now(), barcode: document.getElementById('pCode').value.trim() || '-', name, store: document.getElementById('pStore').value, qty: parseFloat(document.getElementById('pQty').value) || 0, expiry: document.getElementById('pExp').value || '-', buy: parseFloat(document.getElementById('pBuy').value) || 0, sell: parseFloat(document.getElementById('pSell').value) || 0 });
+  ['pCode', 'pName', 'pQty', 'pExp', 'pBuy', 'pSell'].forEach(i => document.getElementById(i).value = '');
+  save(); alert('تم الحفظ!');
+});
+
+        document.getElementById('btnUnlock').addEventListener('click', () => {
+  const v = document.getElementById('unlockPass').value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+  if (v === (storeInfo.adminPass || '1234')) {
+    document.getElementById('lockBox').style.display = 'none';
+    applyRole('admin');
+  } else {
+    const u = users.find(x => x.pass === v);
+    if (u) {
+      document.getElementById('lockBox').style.display = 'none';
+      applyRole('custom', u);
+    } else if (v === (storeInfo.cashierPass || '0000')) {
+      document.getElementById('lockBox').style.display = 'none';
+      applyRole('cashier');
+    } else alert('رمز الدخول غير صحيح');
+  }
+});
+
         let tot = 0;
         document.getElementById('cartBody').innerHTML = cart.map((c, idx) => { const s = c.qty * c.price; tot += s; return `<tr><td>${c.name}</td><td>${c.qty}</td><td>${c.price}</td><td>${s.toFixed(2)}</td><td><button onclick="window.delCart(${idx})" class="btn btn-sm c-red">✖</button></td></tr>`; }).join('');
         document.getElementById('posTotal').innerText = tot.toFixed(2);
@@ -645,6 +675,49 @@ if (topBar && !document.getElementById('btnExitBackup')) {
         document.getElementById('printArea').innerHTML = `<h2>${storeInfo.name}</h2><p>${storeInfo.address} - ${storeInfo.phone}</p><hr><p>التاريخ: ${inv.date} | الطرف: ${inv.party}</p><table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${inv.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${(i.qty*i.price).toFixed(2)}</td></tr>`).join('')}</table><h3>الإجمالي: ${inv.total.toFixed(2)}</h3><p>${storeInfo.footer}</p>`;
         window.print();
       };
+const setBox = document.querySelector('#v-set .win-body');
+if (setBox && !document.getElementById('uManager')) {
+  setBox.insertAdjacentHTML('beforeend', `
+    <div id="uManager" style="margin-top:16px;padding-top:12px;border-top:2px solid #cbd5e1;">
+      <h4 style="margin-bottom:8px;color:#065f46;">👥 إضافة كاشير بصلاحيات مخصصة</h4>
+      <input id="uName" placeholder="اسم الكاشير (مثلاً: أحمد)" style="margin-bottom:6px;">
+      <input id="uPass" type="tel" placeholder="الرقم السري الخاص به" style="margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;margin-bottom:10px;">
+        <label><input type="checkbox" class="uPerm" value="v-possale" checked> فاتورة مبيعات</label>
+        <label><input type="checkbox" class="uPerm" value="v-possale_return"> مرتجع مبيعات</label>
+        <label><input type="checkbox" class="uPerm" value="v-pospurchase"> فاتورة مشتريات</label>
+        <label><input type="checkbox" class="uPerm" value="v-add"> تعريف الأصناف</label>
+        <label><input type="checkbox" class="uPerm" value="v-inv"> الجرد والمخازن</label>
+        <label><input type="checkbox" class="uPerm" value="v-log"> سجل الفواتير</label>
+        <label><input type="checkbox" class="uPerm" value="v-acc"> العملاء والموردين</label>
+        <label><input type="checkbox" class="uPerm" value="v-safe"> الخزينة والمصروفات</label>
+      </div>
+      <button type="button" id="btnAddUser" class="btn c-green">➕ حفظ الكاشير وصلاحياته</button>
+      <div id="uList" style="margin-top:10px;"></div>
+    </div>
+  `);
+
+  window.renderUsers = () => {
+    document.getElementById('uList').innerHTML = users.map((u, idx) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:8px;border-radius:6px;margin-bottom:5px;border:1px solid #cbd5e1;">
+        <span><strong>${u.name}</strong> (رمز: ${u.pass}) - ${u.perms.length} صلاحيات</span>
+        <button onclick="window.delUser(${idx})" class="btn btn-sm c-red" style="width:auto;padding:4px 8px;">حذف</button>
+      </div>`).join('');
+  };
+  window.delUser = (idx) => { users.splice(idx, 1); localStorage.setItem('sahl_users', JSON.stringify(users)); window.renderUsers(); };
+
+  document.getElementById('btnAddUser').addEventListener('click', () => {
+    const name = document.getElementById('uName').value.trim();
+    const pass = document.getElementById('uPass').value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+    const perms = Array.from(document.querySelectorAll('.uPerm:checked')).map(c => c.value);
+    if (!name || !pass) { alert('أدخل الاسم والرقم السري'); return; }
+    users.push({ name, pass, perms });
+    localStorage.setItem('sahl_users', JSON.stringify(users));
+    document.getElementById('uName').value = ''; document.getElementById('uPass').value = '';
+    window.renderUsers(); alert('تم إضافة الكاشير بنجاح!');
+  });
+  window.renderUsers();
+}
 
 applyRole(currentRole); render();
 }
