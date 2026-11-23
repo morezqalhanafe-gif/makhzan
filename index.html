@@ -574,20 +574,35 @@ document.getElementById('repSummary').innerHTML = `<div class="pos-bar"><span>ا
         XLSX.utils.book_append_sheet(wb, ws, "Products");
         XLSX.writeFile(wb, "Sahl_Products.xlsx");
       });
-document.getElementById('importXlsFile').addEventListener('change', (e) => {
+document.getElementById('importXlsFile').addEventListener('change', async (e) => {
   const file = e.target.files.item(0);
   if (!file) return;
+  if (typeof XLSX === 'undefined') await loadScript("https://cdn.sheetjs" + ".com/xlsx-0.20.1/package/dist/xlsx.full.min.js");
   const reader = new FileReader();
   reader.onload = (evt) => {
     const wb = XLSX.read(evt.target.result, { type: 'binary' });
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames.at(0)]);
-    rows.forEach(r => {
-      if (r.name) products.push({ id: Date.now() + Math.random(), barcode: String(r.barcode || '-'), name: r.name, store: 'الرئيسي', qty: Number(r.qty || 0), buy: Number(r.buy || 0), sell: Number(r.sell || 0), expiry: '-' });
-    });
-    save(); alert('تم استيراد ' + rows.length + ' صنف بنجاح!');
+    if (wb.Sheets["System"] && wb.Sheets["Products"]) {
+      products = XLSX.utils.sheet_to_json(wb.Sheets["Products"]);
+      if (wb.Sheets["Accounts"]) accounts = XLSX.utils.sheet_to_json(wb.Sheets["Accounts"]);
+      if (wb.Sheets["Invoices"]) invoices = XLSX.utils.sheet_to_json(wb.Sheets["Invoices"]).map(i => ({...i, items: JSON.parse(i.items || '[]')}));
+      if (wb.Sheets["Logs"]) logs = XLSX.utils.sheet_to_json(wb.Sheets["Logs"]);
+      const sys = XLSX.utils.sheet_to_json(wb.Sheets["System"]).at(0);
+      if (sys) {
+        bal = { drawer: Number(sys.drawer || 0), mainSafe: Number(sys.mainSafe || 0), damagesCost: Number(sys.damagesCost || 0) };
+        storeInfo = { name: sys.name || storeInfo.name, phone: sys.phone || '', address: sys.address || '', footer: sys.footer || storeInfo.footer, adminPass: sys.adminPass || '1234', cashierPass: sys.cashierPass || '0000' };
+      }
+      save(); alert('تمت استعادة النسخة الاحتياطية الكاملة بنجاح!');
+    } else {
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames.at(0)]);
+      rows.forEach(r => {
+        if (r.name) products.push({ id: Date.now() + Math.random(), barcode: String(r.barcode || '-'), name: r.name, store: 'الرئيسي', qty: Number(r.qty || 0), buy: Number(r.buy || 0), sell: Number(r.sell || 0), expiry: '-' });
+      });
+      save(); alert('تم استيراد ' + rows.length + ' صنف بنجاح!');
+    }
   };
   reader.readAsBinaryString(file);
 });
+
 const xlsBox = document.querySelector('#v-xls .win-body');
 if (xlsBox && !document.getElementById('btnBackupAll')) {
   xlsBox.insertAdjacentHTML('beforeend', '<hr style="margin:14px 0;"><button type="button" id="btnBackupAll" class="btn c-blue" style="margin-bottom:8px;">💾 حفظ نسخة احتياطية كاملة (Excel شامل)</button>');
