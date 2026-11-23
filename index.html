@@ -588,6 +588,19 @@ document.getElementById('importXlsFile').addEventListener('change', (e) => {
   };
   reader.readAsBinaryString(file);
 });
+const xlsBox = document.querySelector('#v-xls .win-body');
+if (xlsBox && !document.getElementById('btnBackupAll')) {
+  xlsBox.insertAdjacentHTML('beforeend', '<hr style="margin:14px 0;"><button type="button" id="btnBackupAll" class="btn c-blue" style="margin-bottom:8px;">💾 حفظ نسخة احتياطية كاملة (Excel شامل)</button>');
+  document.getElementById('btnBackupAll').addEventListener('click', () => {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(products), "Products");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(accounts), "Accounts");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(invoices.map(i => ({...i, items: JSON.stringify(i.items)}))), "Invoices");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(logs), "Logs");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{...bal, ...storeInfo}]), "System");
+    XLSX.writeFile(wb, "Sahl_Full_Backup_" + new Date().toISOString().slice(0,10) + ".xlsx");
+  });
+}
 
       window.settleAcc = (id) => {
         const a = accounts.find(x => x.id === id);
