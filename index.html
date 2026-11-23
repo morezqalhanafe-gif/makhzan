@@ -12,43 +12,33 @@
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif; }
     body { margin: 0; background-color: #0d3b31; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
-
     .topbar { background: #0a6852; color: white; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #148f72; position: sticky; top: 0; z-index: 100; }
     .brand { display: flex; align-items: center; gap: 10px; }
     .logo { background: #16a34a; border: 2px solid #a7f3d0; border-radius: 4px; padding: 4px 10px; font-weight: bold; font-size: 18px; }
     .brand h1 { margin: 0; font-size: 15px; }
     .brand p { margin: 0; font-size: 11px; color: #a7f3d0; }
     .btn-top { background: #064e3b; color: white; border: 1px solid #34d399; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
-
     .dashboard { flex: 1; padding: 14px; max-width: 1000px; margin: 0 auto; width: 100%; }
     .group { margin-bottom: 18px; }
     .group-title { color: #6ee7b7; font-size: 13px; font-weight: bold; margin-bottom: 8px; border-right: 3px solid #10b981; padding-right: 6px; }
     .grid-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     @media (min-width: 650px) { .grid-tiles { grid-template-columns: repeat(4, 1fr); } }
-
-    .tile {
-      height: 82px; border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;
-      color: white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.18);
-    }
+    .tile { height: 82px; border-radius: 4px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; color: white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.18); }
     .tile.wide { grid-column: span 2; }
     .tile:active { transform: scale(0.97); }
     .t-title { font-size: 13px; font-weight: bold; display: block; }
     .t-sub { font-size: 10px; opacity: 0.85; display: block; margin-top: 2px; }
     .t-ico { font-size: 26px; }
-
     .c-green { background: #16a34a; } .c-teal { background: #0d9488; } .c-emerald { background: #059669; }
     .c-blue { background: #0284c7; } .c-indigo { background: #2563eb; } .c-purple { background: #7c3aed; }
     .c-orange { background: #ea580c; } .c-amber { background: #d97706; } .c-red { background: #dc2626; } .c-cyan { background: #0891b2; } .c-slate { background: #475569; }
-
     .view { display: none; background: #f0fdf4; flex: 1; padding: 12px; max-width: 1000px; margin: 0 auto; width: 100%; }
     .view.active { display: block; }
     .win { background: white; border: 2px solid #0a6852; border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
     .win-head { background: #0a6852; color: white; padding: 9px 12px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
     .win-body { padding: 12px; }
-
     .pos-bar { background: #dcfce7; border: 2px solid #16a34a; border-radius: 4px; padding: 10px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     .pos-total { background: #16a34a; color: white; padding: 6px 16px; border-radius: 4px; font-size: 22px; font-weight: bold; font-family: monospace; }
-
     input, select { width: 100%; padding: 9px; margin-bottom: 9px; border: 1px solid #94a3b8; border-radius: 4px; font-size: 14px; background: #fff; }
     label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #0a6852; }
     .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; }
@@ -58,18 +48,14 @@
     .igroup { display: flex; gap: 6px; margin-bottom: 9px; }
     .igroup input, .igroup select { margin-bottom: 0; }
     .igroup button { width: auto; padding: 0 12px; }
-
     .tbl-wrap { overflow-x: auto; border: 1px solid #cbd5e1; margin-top: 8px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; }
     th { background: #0a6852; color: white; padding: 7px; border: 1px solid #064e3b; white-space: nowrap; }
     td { padding: 7px; border: 1px solid #cbd5e1; white-space: nowrap; }
     .low { background: #fee2e2 !important; color: #991b1b; font-weight: bold; }
-
     .botbar { background: #07241e; color: #a7f3d0; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 11px; border-top: 1px solid #134e4a; position: sticky; bottom: 0; z-index: 90; }
     .pill { background: #0d3b31; padding: 4px 8px; border-radius: 4px; border: 1px solid #148f72; }
-
     body.role-cashier .admin-only { display: none !important; }
-
     #lockBox, #scanModal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
     .lock-card { background: white; padding: 25px; border-radius: 6px; width: 100%; max-width: 350px; text-align: center; }
     #reader { width: 100%; max-width: 380px; background: white; border-radius: 6px; overflow: hidden; }
@@ -78,13 +64,10 @@
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
       #printArea { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; color: black; direction: rtl; }
-      #printArea table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-      #printArea th, #printArea td { border: 1px solid #000; padding: 8px; text-align: right; }
     }
   </style>
 </head>
 <body>
-
   <div id="lockBox">
     <div class="lock-card">
       <div class="logo" style="display:inline-block; color:white; margin-bottom:10px;">سهل</div>
@@ -94,7 +77,6 @@
       <button type="button" id="btnUnlock" class="btn c-green">دخول للنظام</button>
     </div>
   </div>
-
   <div id="scanModal"><div id="reader"></div><button type="button" id="btnCloseScan" class="btn c-red" style="width:auto; margin-top:12px;">إغلاق الكاميرا ✖</button></div>
   <div id="printArea"></div>
 
@@ -124,7 +106,6 @@
         <div class="tile c-teal wide" data-v="v-log"><div><span class="t-title">سجل الفواتير والحركة اليومية</span><span class="t-sub">استعراض وطباعة الفواتير</span></div><span class="t-ico">🧾</span></div>
       </div>
     </div>
-
     <div class="group">
       <div class="group-title">البضاعة وإدارة المخازن</div>
       <div class="grid-tiles">
@@ -134,11 +115,196 @@
         <div class="tile c-indigo admin-only" data-v="v-xls"><div><span class="t-title">بيانات Excel</span><span class="t-sub">استيراد وتصدير</span></div><span class="t-ico">📊</span></div>
       </div>
     </div>
-
     <div class="group">
       <div class="group-title">الحسابات والخزينة والتقارير</div>
       <div class="grid-tiles">
         <div class="tile c-purple" data-v="v-acc"><div><span class="t-title">العملاء والموردين</span><span class="t-sub">كشوف الحسابات</span></div><span class="t-ico">👥</span></div>
+        <div class="tile c-emerald admin-only" data-v="v-safe"><div><span class="t-title">الخزينة والمصروفات</span><span class="t-sub">الدرج والخزنة</span></div><span class="t-ico">💰</span></div>
+  <!-- شاشة نقطة البيع والفواتير -->
+  <div id="v-pos" class="view">
+    <div class="win">
+      <div class="win-head"><span id="posTitle">فاتورة مبيعات</span></div>
+      <div class="win-body">
+        <div class="pos-bar">
+          <div><small>الإجمالي المطلوب</small><div id="posTotal" class="pos-total">0.00</div></div>
+          <div style="width:45%"><label>نوع الفاتورة</label>
+            <select id="invType">
+              <option value="sale">مبيعات</option>
+              <option value="sale_return">مرتجع مبيعات</option>
+              <option value="purchase">مشتريات</option>
+              <option value="purchase_return">مرتجع مشتريات</option>
+            </select>
+          </div>
+        </div>
+        <div class="g2">
+          <div><label>طريقة الدفع</label><select id="payMethod"><option value="cash">نقدي (الدرج)</option><option value="credit">آجل (على الحساب)</option></select></div>
+          <div><label>العميل / المورد</label><select id="invAccount"><option value="">-- عميل نقدي عام --</option></select></div>
+        </div>
+        <label>إضافة صنف بالاسم أو الباركود</label>
+        <div class="igroup">
+          <select id="invProdSelect"></select>
+          <input type="number" id="invQtyInput" value="1" min="0.1" step="any" style="width:80px">
+          <button type="button" id="btnAddCart" class="btn c-green">إضافة</button>
+          <button type="button" id="scanInv" class="btn c-blue">📷</button>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table>
+        </div>
+        <div class="g2" style="margin-top:12px;">
+          <button type="button" id="btnSaveInv" class="btn c-green">💾 حفظ وترحيل الفاتورة</button>
+          <button type="button" id="btnClearCart" class="btn c-red">🗑️ إفراغ السلة</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة سجل الفواتير -->
+  <div id="v-log" class="view">
+    <div class="win">
+      <div class="win-head"><span>سجل الفواتير والحركة اليومية</span></div>
+      <div class="win-body">
+        <div class="tbl-wrap">
+          <table><thead><tr><th>التاريخ</th><th>النوع</th><th>الطرف</th><th>الدفع</th><th>الإجمالي</th><th>طباعة</th></tr></thead><tbody id="invLogBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة تعريف الأصناف -->
+  <div id="v-add" class="view">
+    <div class="win">
+      <div class="win-head"><span>تعريف صنف جديد بالمخزن</span></div>
+      <div class="win-body">
+        <label>الباركود</label>
+        <div class="igroup"><input type="text" id="pCode" placeholder="امسح أو اكتب الباركود"><button type="button" id="scanAdd" class="btn c-blue">📷 مسح</button></div>
+        <label>اسم الصنف *</label><input type="text" id="pName" placeholder="مثال: سكر أبيض 1 كجم">
+        <div class="g2">
+          <div><label>المخزن</label><select id="pStore"><option value="الرئيسي">الرئيسي</option><option value="الفرعي">الفرعي</option></select></div>
+          <div><label>الكمية الافتتاحية</label><input type="number" id="pQty" placeholder="0"></div>
+        </div>
+        <div class="g3">
+          <div><label>سعر الشراء</label><input type="number" id="pBuy" step="any" placeholder="0.00"></div>
+          <div><label>سعر البيع</label><input type="number" id="pSell" step="any" placeholder="0.00"></div>
+          <div><label>الصلاحية</label><input type="date" id="pExp"></div>
+        </div>
+        <button type="button" id="btnAddProd" class="btn c-emerald">➕ حفظ الصنف في السحابة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة جرد المخزن -->
+  <div id="v-inv" class="view">
+    <div class="win">
+      <div class="win-head"><span>جرد المخزن والأرصدة</span></div>
+      <div class="win-body">
+        <div class="igroup"><input type="text" id="searchBox" placeholder="ابحث بالاسم أو الباركود..."><button type="button" id="scanSearch" class="btn c-blue">📷</button></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>الباركود</th><th>الصنف</th><th>المخزن</th><th>الكمية</th><th>الشراء</th><th>البيع</th><th>حذف</th></tr></thead><tbody id="invBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة التسوية والتحويل -->
+  <div id="v-adj" class="view">
+    <div class="win">
+      <div class="win-head"><span>تسوية التلفيات والتحويل بين المخازن</span></div>
+      <div class="win-body">
+        <label>اختر الصنف</label><select id="adjProd"></select>
+        <div class="g2">
+          <div><label>نوع العملية</label><select id="adjType"><option value="damage">تسجيل تالف / هالك</option><option value="sub">تحويل للمخزن الفرعي</option><option value="main">تحويل للمخزن الرئيسي</option></select></div>
+          <div><label>الكمية</label><input type="number" id="adjQty" min="1"></div>
+        </div>
+        <button type="button" id="btnAdj" class="btn c-red">تنفيذ التسوية</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة Excel -->
+  <div id="v-xls" class="view">
+    <div class="win">
+      <div class="win-head"><span>استيراد وتصدير بيانات Excel</span></div>
+      <div class="win-body">
+        <button type="button" id="btnExportXls" class="btn c-green" style="margin-bottom:12px;">📤 تصدير الأصناف إلى ملف Excel</button>
+        <label>استيراد أصناف من ملف Excel (الأعمدة: barcode, name, qty, buy, sell)</label>
+        <input type="file" id="importXlsFile" accept=".xlsx,.xls">
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة العملاء والموردين -->
+  <div id="v-acc" class="view">
+    <div class="win">
+      <div class="win-head"><span>العملاء والموردين</span></div>
+      <div class="win-body">
+        <div class="g3">
+          <input type="text" id="accName" placeholder="الاسم">
+          <select id="accType"><option value="عميل">عميل</option><option value="مورد">مورد</option></select>
+          <input type="number" id="accBal" placeholder="الرصيد الافتتاحي">
+        </div>
+        <button type="button" id="btnAddAcc" class="btn c-purple">➕ إضافة حساب</button>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>الاسم</th><th>النوع</th><th>الرصيد</th><th>سداد / تحصيل</th></tr></thead><tbody id="accBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة الخزينة -->
+  <div id="v-safe" class="view">
+    <div class="win">
+      <div class="win-head"><span>الخزينة والمصروفات</span></div>
+      <div class="win-body">
+        <div class="g2" style="margin-bottom:10px;">
+          <div class="pos-bar"><span>الدرج:</span><strong id="drawerVal">0.00</strong></div>
+          <div class="pos-bar"><span>الخزنة الرئيسية:</span><strong id="safeVal">0.00</strong></div>
+        </div>
+        <div class="g3">
+          <select id="safeOp"><option value="expense">مصروفات من الدرج</option><option value="to_safe">ترحيل من الدرج للخزنة</option><option value="deposit">إيداع بالخزنة</option></select>
+          <input type="number" id="safeAmt" placeholder="المبلغ">
+          <input type="text" id="safeNote" placeholder="البيان / السبب">
+        </div>
+        <button type="button" id="btnSafeOp" class="btn c-emerald">تنفيذ الحركة المالية</button>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>التاريخ</th><th>الحركة</th><th>البيان</th><th>المبلغ</th></tr></thead><tbody id="safeLogBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة التقارير -->
+  <div id="v-rep" class="view">
+    <div class="win">
+      <div class="win-head"><span>ملخص التقارير والأرباح</span></div>
+      <div class="win-body" id="repSummary"></div>
+    </div>
+  </div>
+
+  <!-- شاشة الإعدادات -->
+  <div id="v-set" class="view">
+    <div class="win">
+      <div class="win-head"><span>إعدادات النظام والمحل</span></div>
+      <div class="win-body">
+        <label>اسم النشاط التجاري</label><input type="text" id="setStoreName">
+        <div class="g2">
+          <div><label>رقم الهاتف</label><input type="text" id="setStorePhone"></div>
+          <div><label>العنوان</label><input type="text" id="setStoreAddress"></div>
+        </div>
+        <label>رسالة أسفل الفاتورة</label><input type="text" id="setStoreFooter">
+        <div class="g2">
+          <div><label>رمز دخول المدير</label><input type="text" id="setAdminPass"></div>
+          <div><label>رمز دخول الكاشير</label><input type="text" id="setCashierPass"></div>
+        </div>
+        <button type="button" id="btnSaveSettings" class="btn c-slate">💾 حفظ ومزامنة الإعدادات</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="botbar">
+    <span id="cloudStatus" class="pill">⏳ جاري الاتصال بالسحابة...</span>
+    <span id="bHome" class="pill" style="cursor:pointer;">🏠 الرئيسية</span>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://gstatic.com";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://gstatic.com";
@@ -156,197 +322,9 @@
     const db = getFirestore(app);
     const stateDocRef = doc(db, "makhzan_data", "main_store");
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
-
     let products = JSON.parse(localStorage.getItem('sahl_products')) || [];
     let accounts = JSON.parse(localStorage.getItem('sahl_accounts')) || [];
     let invoices = JSON.parse(localStorage.getItem('sahl_invoices')) || [];
     let logs = JSON.parse(localStorage.getItem('sahl_treasury_log')) || [];
     let bal = JSON.parse(localStorage.getItem('sahl_balances')) || { drawer: 0, mainSafe: 0, damagesCost: 0 };
     let storeInfo = JSON.parse(localStorage.getItem('sahl_store_info')) || {
-      name: 'سهل لإدارة الأعمال',
-      phone: '',
-      address: '',
-      footer: 'شكراً لتعاملكم معنا',
-      adminPass: '1234',
-      cashierPass: '0000'
-    };
-    let currentRole = localStorage.getItem('sahl_role') || 'admin';
-    let cart = [], qr = null;
-
-    onSnapshot(stateDocRef, (snapshot) => {
-      document.getElementById('cloudStatus').innerText = '🟢 متصل بالسحابة';
-      if (snapshot.exists()) {
-        const d = snapshot.data();
-        products = d.products || [];
-        accounts = d.accounts || [];
-        invoices = d.invoices || [];
-        logs = d.logs || [];
-        bal = d.bal || { drawer: 0, mainSafe: 0, damagesCost: 0 };
-        if (d.storeInfo) storeInfo = d.storeInfo;
-        saveLocal();
-        render();
-      } else {
-        save();
-      }
-    }, () => {
-      document.getElementById('cloudStatus').innerText = '🟠 وضع محلي';
-    });
-
-    function saveLocal() {
-      try {
-        localStorage.setItem('sahl_products', JSON.stringify(products));
-        localStorage.setItem('sahl_accounts', JSON.stringify(accounts));
-        localStorage.setItem('sahl_invoices', JSON.stringify(invoices));
-        localStorage.setItem('sahl_treasury_log', JSON.stringify(logs));
-        localStorage.setItem('sahl_balances', JSON.stringify(bal));
-        localStorage.setItem('sahl_store_info', JSON.stringify(storeInfo));
-      } catch (e) {}
-    }
-
-    async function save() {
-      saveLocal();
-      render();
-      try {
-        await setDoc(stateDocRef, {
-          products, accounts, invoices, logs, bal, storeInfo, updatedAt: Date.now()
-        });
-      } catch (e) {
-        document.getElementById('cloudStatus').innerText = '🟠 محفوظ محلياً';
-      }
-    }
-
-    function applyRole(role) {
-      currentRole = role;
-      localStorage.setItem('sahl_role', role);
-      if (role === 'cashier') {
-        document.body.classList.add('role-cashier');
-        document.getElementById('roleBadge').innerText = 'الصلاحية: كاشير (بائع)';
-      } else {
-        document.body.classList.remove('role-cashier');
-        document.getElementById('roleBadge').innerText = 'الصلاحية: مدير النظام';
-      }
-      goHome();
-    }
-
-    function logMove(type, desc, amount) {
-      logs.unshift({ date: new Date().toLocaleString('ar-EG'), type, desc, amount });
-    }
-
-    function openView(id, t) {
-      document.getElementById('dashboard').style.display = 'none';
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.getElementById('btnHome').style.display = 'inline-block';
-      if (id === 'v-pos' && t) {
-        document.getElementById('invType').value = t;
-        const names = { sale: 'فاتورة مبيعات', sale_return: 'مرتجع مبيعات', purchase: 'فاتورة مشتريات', purchase_return: 'مرتجع مشتريات' };
-        document.getElementById('posTitle').innerText = names[t];
-      }
-      if (id === 'v-set') {
-        document.getElementById('setStoreName').value = storeInfo.name;
-        document.getElementById('setStorePhone').value = storeInfo.phone;
-        document.getElementById('setStoreAddress').value = storeInfo.address;
-        document.getElementById('setStoreFooter').value = storeInfo.footer;
-        document.getElementById('setAdminPass').value = storeInfo.adminPass || '1234';
-        document.getElementById('setCashierPass').value = storeInfo.cashierPass || '0000';
-      }
-    }
-
-    function goHome() {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById('dashboard').style.display = 'block';
-      document.getElementById('btnHome').style.display = 'none';
-    }
-
-    document.querySelectorAll('.tile').forEach(el => {
-      el.addEventListener('click', () => openView(el.getAttribute('data-v'), el.getAttribute('data-t')));
-    });
-    document.getElementById('btnHome').addEventListener('click', goHome);
-    document.getElementById('bHome').addEventListener('click', goHome);
-
-    document.getElementById('btnSaveSettings').addEventListener('click', () => {
-      storeInfo.name = document.getElementById('setStoreName').value.trim() || 'سهل لإدارة الأعمال';
-      storeInfo.phone = document.getElementById('setStorePhone').value.trim();
-      storeInfo.address = document.getElementById('setStoreAddress').value.trim();
-      storeInfo.footer = document.getElementById('setStoreFooter').value.trim() || 'شكراً لتعاملكم معنا';
-      storeInfo.adminPass = document.getElementById('setAdminPass').value.trim() || '1234';
-      storeInfo.cashierPass = document.getElementById('setCashierPass').value.trim() || '0000';
-      save();
-      alert('تم حفظ ومزامنة الإعدادات بنجاح!');
-    });
-
-    document.getElementById('btnLock').addEventListener('click', () => {
-      document.getElementById('unlockPass').value = '';
-      document.getElementById('lockBox').style.display = 'flex';
-    });
-    document.getElementById('btnUnlock').addEventListener('click', () => {
-      const v = document.getElementById('unlockPass').value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
-      const adm = storeInfo.adminPass || '1234';
-      const csh = storeInfo.cashierPass || '0000';
-      if (v === adm) {
-        document.getElementById('lockBox').style.display = 'none';
-        applyRole('admin');
-      } else if (v === csh) {
-        document.getElementById('lockBox').style.display = 'none';
-        applyRole('cashier');
-      } else {
-        alert('رمز الدخول غير صحيح!');
-      }
-    });
-
-    function scan(mode) {
-      if (typeof Html5Qrcode === 'undefined') { alert('تأكد من الإنترنت'); return; }
-      document.getElementById('scanModal').style.display = 'flex';
-      qr = new Html5Qrcode("reader");
-      qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 220 }, code => {
-        stopScan();
-        if (mode === 'add') document.getElementById('pCode').value = code;
-        else if (mode === 'search') { document.getElementById('searchBox').value = code; render(); }
-        else if (mode === 'inv') {
-          const f = products.find(p => p.barcode === code);
-          if (f) addCart(f, 1); else alert('غير موجود: ' + code);
-        }
-      }, () => {}).catch(() => { alert('الكاميرا تعمل عبر HTTPS في Safari'); document.getElementById('scanModal').style.display = 'none'; });
-    }
-    function stopScan() {
-      if (qr) qr.stop().then(() => { qr.clear(); document.getElementById('scanModal').style.display = 'none'; }).catch(() => { document.getElementById('scanModal').style.display = 'none'; });
-      else document.getElementById('scanModal').style.display = 'none';
-    }
-    document.getElementById('btnCloseScan').addEventListener('click', stopScan);
-    document.getElementById('scanAdd').addEventListener('click', () => scan('add'));
-    document.getElementById('scanSearch').addEventListener('click', () => scan('search'));
-    document.getElementById('scanInv').addEventListener('click', () => scan('inv'));
-
-    document.getElementById('btnAddProd').addEventListener('click', () => {
-      const name = document.getElementById('pName').value.trim();
-      if (!name) { alert('أدخل اسم الصنف'); return; }
-      products.push({
-        id: Date.now(), barcode: document.getElementById('pCode').value.trim() || '-',
-        name, store: document.getElementById('pStore').value,
-        qty: parseFloat(document.getElementById('pQty').value) || 0,
-        expiry: document.getElementById('pExp').value || '-',
-        buy: parseFloat(document.getElementById('pBuy').value) || 0,
-        sell: parseFloat(document.getElementById('pSell').value) || 0
-      });
-      ['pCode', 'pName', 'pQty', 'pExp', 'pBuy', 'pSell'].forEach(i => document.getElementById(i).value = '');
-      save(); alert('تم الحفظ والمزامنة');
-    });
-
-    document.getElementById('btnAdj').addEventListener('click', () => {
-      const p = products.find(x => x.id == document.getElementById('adjProd').value);
-      const q = parseFloat(document.getElementById('adjQty').value) || 0;
-      const t = document.getElementById('adjType').value;
-      if (!p || q <= 0 || q > p.qty) { alert('كمية غير صحيحة'); return; }
-      p.qty -= q;
-      if (t === 'damage') {
-        bal.damagesCost += q * p.buy;
-        logMove('تلفيات', p.name + ' (' + q + ')', -(q * p.buy));
-      } else {
-        const st = t === 'sub' ? 'الفرعي' : 'الرئيسي';
-        const ex = products.find(x => x.name === p.name && x.store === st);
-        if (ex) ex.qty += q;
-        else products.push({ id: Date.now(), barcode: p.barcode, name: p.name, store: st, qty: q, expiry: p.expiry, buy: p.buy, sell: p.sell });
-      }
