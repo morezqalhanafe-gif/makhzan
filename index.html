@@ -510,7 +510,70 @@
         document.getElementById('drawerVal').innerText = bal.drawer.toFixed(2); document.getElementById('safeVal').innerText = bal.mainSafe.toFixed(2);
         document.getElementById('safeLogBody').innerHTML = logs.map(l => `<tr><td>${l.date}</td><td>${l.type}</td><td>${l.desc}</td><td>${l.amount}</td></tr>`).join('');
         const totSales = invoices.filter(i => i.type === 'sale').reduce((s, i) => s + i.total, 0);
+             }   function scan(mode) {
+        if (typeof Html5Qrcode === 'undefined') { alert('تأكد من الإنترنت'); return; }
+        document.getElementById('scanModal').style.display = 'flex';
+        const qr = new Html5Qrcode("reader");
+        window.currQr = qr;
+        qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 220 }, code => {
+          stopScan();
+          if (mode === 'add') document.getElementById('pCode').value = code;
+          else if (mode === 'search') { document.getElementById('searchBox').value = code; render(); }
+          else if (mode === 'inv') {
+            const f = products.find(p => p.barcode === code);
+            if (f) { document.getElementById('invProdSelect').value = f.id; document.getElementById('btnAddCart').click(); }
+            else alert('غير موجود: ' + code);
+          }
+        }, () => {}).catch(() => { alert('الكاميرا تعمل عبر HTTPS'); document.getElementById('scanModal').style.display = 'none'; });
+      }
+      function stopScan() {
+        if (window.currQr) window.currQr.stop().then(() => { window.currQr.clear(); document.getElementById('scanModal').style.display = 'none'; }).catch(() => { document.getElementById('scanModal').style.display = 'none'; });
+        else document.getElementById('scanModal').style.display = 'none';
+      }
+      document.getElementById('btnCloseScan').addEventListener('click', stopScan);
+      document.getElementById('scanAdd').addEventListener('click', () => scan('add'));
+      document.getElementById('scanSearch').addEventListener('click', () => scan('search'));
+      document.getElementById('scanInv').addEventListener('click', () => scan('inv'));
+
+      document.getElementById('btnAdj').addEventListener('click', () => {
+        const p = products.find(x => x.id == document.getElementById('adjProd').value);
+        const q = parseFloat(document.getElementById('adjQty').value) || 0;
+        const t = document.getElementById('adjType').value;
+        if (!p || q <= 0 || q > p.qty) { alert('كمية غير صحيحة'); return; }
+        p.qty -= q;
+        if (t === 'damage') { bal.damagesCost += q * p.buy; logMove('تلفيات', p.name + ' (' + q + ')', -(q * p.buy)); }
+        else {
+          const st = t === 'sub' ? 'الفرعي' : 'الرئيسي';
+          const ex = products.find(x => x.name === p.name && x.store === st);
+          if (ex) ex.qty += q;
+          else products.push({ id: Date.now(), barcode: p.barcode, name: p.name, store: st, qty: q, expiry: p.expiry, buy: p.buy, sell: p.sell });
+          logMove('تحويل مخزني', p.name + ' -> ' + st, 0);
         }
+        save(); alert('تم تنفيذ التسوية!');
+      });
+
+      document.getElementById('btnExportXls').addEventListener('click', () => {
+        const ws = XLSX.utils.json_to_sheet(products);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Products");
+        XLSX.writeFile(wb, "Sahl_Products.xlsx");
+      });
+
+      window.settleAcc = (id) => {
+        const a = accounts.find(x => x.id === id);
+        const v = parseFloat(prompt('أدخل مبلغ التحصيل أو السداد لـ ' + a.name));
+        if (!v) return;
+        a.balance -= v; bal.drawer += v;
+        logMove('سداد حساب', a.name, v); save();
+      };
+
+      window.printInv = (id) => {
+        const inv = invoices.find(x => x.id === id);
+        if (!inv) return;
+        document.getElementById('printArea').innerHTML = `<h2>${storeInfo.name}</h2><p>${storeInfo.address} - ${storeInfo.phone}</p><hr><p>التاريخ: ${inv.date} | الطرف: ${inv.party}</p><table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${inv.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${(i.qty*i.price).toFixed(2)}</td></tr>`).join('')}</table><h3>الإجمالي: ${inv.total.toFixed(2)}</h3><p>${storeInfo.footer}</p>`;
+        window.print();
+      };
+
 applyRole(currentRole); render();
 }
 initMakhzan();
