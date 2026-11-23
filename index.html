@@ -704,7 +704,8 @@ if (setBox && !document.getElementById('uManager')) {
         <button onclick="window.delUser(${idx})" class="btn btn-sm c-red" style="width:auto;padding:4px 8px;">حذف</button>
       </div>`).join('');
   };
-  window.delUser = (idx) => { users.splice(idx, 1); localStorage.setItem('sahl_users', JSON.stringify(users)); window.renderUsers(); };
+    window.delUser = (i) => { users.splice(i, 1); localStorage.setItem('sahl_users', JSON.stringify(users)); window.renderUsers(); };
+
 
   document.getElementById('btnAddUser').addEventListener('click', () => {
     const name = document.getElementById('uName').value.trim();
