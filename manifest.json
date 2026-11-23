@@ -1,0 +1,16 @@
+{
+  "name": "سهل لإدارة الأعمال",
+  "short_name": "سهل",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d3b31",
+  "theme_color": "#0a6852",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://flaticon.com",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
