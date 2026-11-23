@@ -510,6 +510,9 @@
         document.getElementById('drawerVal').innerText = bal.drawer.toFixed(2); document.getElementById('safeVal').innerText = bal.mainSafe.toFixed(2);
         document.getElementById('safeLogBody').innerHTML = logs.map(l => `<tr><td>${l.date}</td><td>${l.type}</td><td>${l.desc}</td><td>${l.amount}</td></tr>`).join('');
         const totSales = invoices.filter(i => i.type === 'sale').reduce((s, i) => s + i.total, 0);
+const totProfit = invoices.reduce((s, i) => s + (i.profit || 0), 0);
+document.getElementById('repSummary').innerHTML = `<div class="pos-bar"><span>المبيعات:</span><strong>${totSales.toFixed(2)}</strong></div><div class="pos-bar"><span>الأرباح:</span><strong>${totProfit.toFixed(2)}</strong></div>`;
+
              }   function scan(mode) {
         if (typeof Html5Qrcode === 'undefined') { alert('تأكد من الإنترنت'); return; }
         document.getElementById('scanModal').style.display = 'flex';
