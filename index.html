@@ -402,7 +402,8 @@
   document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
   const el = document.getElementById(id);
   if (el) {
-  el.style.display = 'block';
+  el.style.cssText = 'display:block !important; position:fixed; inset:55px 0 38px 0; overflow-y:auto; z-index:999; background:#f0fdf4; padding:12px;';
+
 }
 
   document.getElementById('btnHome').style.display = 'inline-block';
