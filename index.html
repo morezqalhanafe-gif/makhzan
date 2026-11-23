@@ -400,7 +400,11 @@
   document.getElementById('dashboard').style.display = 'none';
   document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
   const el = document.getElementById(id);
-  if (el) el.style.display = 'block';
+  if (el) {
+  document.body.insertBefore(el, document.querySelector('.botbar'));
+  el.style.display = 'block';
+}
+
   document.getElementById('btnHome').style.display = 'inline-block';
   if (id === 'v-pos' && t) {
     document.getElementById('invType').value = t;
