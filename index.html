@@ -241,4 +241,271 @@
       <div class="group-title">الحسابات والخزينة والتقارير</div>
       <div class="grid-tiles">
         <div class="tile c-purple" data-v="v-acc"><div><span class="t-title">العملاء والموردين</span><span class="t-sub">كشوف الحسابات</span></div><span class="t-ico">👥</span></div>
-        <div class="tile c-emerald admin-only" data-v="v-safe"><div><span class="t-title">الخزينة والمصروفات</span><span class="t-sub">الدرج والخزنة</span></div><span class="t-ico">💰</span></div>
+                <div class="tile c-emerald admin-only" data-v="v-safe"><div><span class="t-title">الخزينة والمصروفات</span><span class="t-sub">الدرج والخزنة</span></div><span class="t-ico">💰</span></div>
+        <div class="tile c-blue admin-only" data-v="v-rep"><div><span class="t-title">التقارير والأرباح</span><span class="t-sub">ملخص الأداء</span></div><span class="t-ico">📈</span></div>
+        <div class="tile c-slate admin-only" data-v="v-set"><div><span class="t-title">إعدادات النظام</span><span class="t-sub">اسم المحل والرموز</span></div><span class="t-ico">⚙️</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="v-pos" class="view">
+    <div class="win">
+      <div class="win-head"><span id="posTitle">فاتورة مبيعات</span></div>
+      <div class="win-body">
+        <div class="pos-bar">
+          <div><small>الإجمالي المطلوب</small><div id="posTotal" class="pos-total">0.00</div></div>
+          <div style="width:45%"><label>نوع الفاتورة</label>
+            <select id="invType"><option value="sale">مبيعات</option><option value="sale_return">مرتجع مبيعات</option><option value="purchase">مشتريات</option><option value="purchase_return">مرتجع مشتريات</option></select>
+          </div>
+        </div>
+        <div class="g2">
+          <div><label>طريقة الدفع</label><select id="payMethod"><option value="cash">نقدي (الدرج)</option><option value="credit">آجل (على الحساب)</option></select></div>
+          <div><label>العميل / المورد</label><select id="invAccount"><option value="">-- عميل نقدي عام --</option></select></div>
+        </div>
+        <label>إضافة صنف</label>
+        <div class="igroup">
+          <select id="invProdSelect"></select>
+          <input type="number" id="invQtyInput" value="1" min="0.1" step="any" style="width:80px">
+          <button type="button" id="btnAddCart" class="btn c-green">إضافة</button>
+          <button type="button" id="scanInv" class="btn c-blue">📷</button>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table></div>
+        <div class="g2" style="margin-top:12px;">
+          <button type="button" id="btnSaveInv" class="btn c-green">💾 حفظ وترحيل</button>
+          <button type="button" id="btnClearCart" class="btn c-red">🗑️ إفراغ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="v-log" class="view"><div class="win"><div class="win-head"><span>سجل الفواتير</span></div><div class="win-body"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>الطرف</th><th>الدفع</th><th>الإجمالي</th><th>طباعة</th></tr></thead><tbody id="invLogBody"></tbody></table></div></div></div></div>
+
+  <div id="v-add" class="view"><div class="win"><div class="win-head"><span>تعريف صنف جديد</span></div><div class="win-body">
+    <label>الباركود</label><div class="igroup"><input type="text" id="pCode" placeholder="الباركود"><button type="button" id="scanAdd" class="btn c-blue">📷</button></div>
+    <label>اسم الصنف *</label><input type="text" id="pName" placeholder="اسم الصنف">
+    <div class="g2"><div><label>المخزن</label><select id="pStore"><option value="الرئيسي">الرئيسي</option><option value="الفرعي">الفرعي</option></select></div><div><label>الكمية</label><input type="number" id="pQty" placeholder="0"></div></div>
+    <div class="g3"><div><label>الشراء</label><input type="number" id="pBuy" step="any"></div><div><label>البيع</label><input type="number" id="pSell" step="any"></div><div><label>الصلاحية</label><input type="date" id="pExp"></div></div>
+    <button type="button" id="btnAddProd" class="btn c-emerald">➕ حفظ الصنف</button>
+  </div></div></div>
+
+  <div id="v-inv" class="view"><div class="win"><div class="win-head"><span>جرد المخزن</span></div><div class="win-body">
+    <div class="igroup"><input type="text" id="searchBox" placeholder="ابحث..."><button type="button" id="scanSearch" class="btn c-blue">📷</button></div>
+    <div class="tbl-wrap"><table><thead><tr><th>الباركود</th><th>الصنف</th><th>المخزن</th><th>الكمية</th><th>الشراء</th><th>البيع</th><th>حذف</th></tr></thead><tbody id="invBody"></tbody></table></div>
+  </div></div></div>
+
+  <div id="v-adj" class="view"><div class="win"><div class="win-head"><span>تسوية وتحويل</span></div><div class="win-body">
+    <label>الصنف</label><select id="adjProd"></select>
+    <div class="g2"><div><label>العملية</label><select id="adjType"><option value="damage">تالف</option><option value="sub">للفرعي</option><option value="main">للرئيسي</option></select></div><div><label>الكمية</label><input type="number" id="adjQty" min="1"></div></div>
+    <button type="button" id="btnAdj" class="btn c-red">تنفيذ</button>
+  </div></div></div>
+
+  <div id="v-xls" class="view"><div class="win"><div class="win-head"><span>Excel</span></div><div class="win-body">
+    <button type="button" id="btnExportXls" class="btn c-green" style="margin-bottom:12px;">📤 تصدير Excel</button>
+    <input type="file" id="importXlsFile" accept=".xlsx,.xls">
+  </div></div></div>
+
+  <div id="v-acc" class="view"><div class="win"><div class="win-head"><span>العملاء والموردين</span></div><div class="win-body">
+    <div class="g3"><input type="text" id="accName" placeholder="الاسم"><select id="accType"><option value="عميل">عميل</option><option value="مورد">مورد</option></select><input type="number" id="accBal" placeholder="الرصيد"></div>
+    <button type="button" id="btnAddAcc" class="btn c-purple">➕ إضافة</button>
+    <div class="tbl-wrap"><table><thead><tr><th>الاسم</th><th>النوع</th><th>الرصيد</th><th>سداد</th></tr></thead><tbody id="accBody"></tbody></table></div>
+  </div></div></div>
+
+  <div id="v-safe" class="view"><div class="win"><div class="win-head"><span>الخزينة</span></div><div class="win-body">
+    <div class="g2" style="margin-bottom:10px;"><div class="pos-bar"><span>الدرج:</span><strong id="drawerVal">0.00</strong></div><div class="pos-bar"><span>الخزنة:</span><strong id="safeVal">0.00</strong></div></div>
+    <div class="g3"><select id="safeOp"><option value="expense">مصروف</option><option value="to_safe">ترحيل</option><option value="deposit">إيداع</option></select><input type="number" id="safeAmt" placeholder="المبلغ"><input type="text" id="safeNote" placeholder="البيان"></div>
+    <button type="button" id="btnSafeOp" class="btn c-emerald">تنفيذ</button>
+    <div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>الحركة</th><th>البيان</th><th>المبلغ</th></tr></thead><tbody id="safeLogBody"></tbody></table></div>
+  </div></div></div>
+
+  <div id="v-rep" class="view"><div class="win"><div class="win-head"><span>التقارير</span></div><div class="win-body" id="repSummary"></div></div></div>
+
+  <div id="v-set" class="view"><div class="win"><div class="win-head"><span>الإعدادات</span></div><div class="win-body">
+    <label>اسم المحل</label><input type="text" id="setStoreName">
+    <div class="g2"><div><label>الهاتف</label><input type="text" id="setStorePhone"></div><div><label>العنوان</label><input type="text" id="setStoreAddress"></div></div>
+    <label>تذييل الفاتورة</label><input type="text" id="setStoreFooter">
+    <div class="g2"><div><label>رمز المدير</label><input type="text" id="setAdminPass"></div><div><label>رمز الكاشير</label><input type="text" id="setCashierPass"></div></div>
+    <button type="button" id="btnSaveSettings" class="btn c-slate">💾 حفظ</button>
+  </div></div></div>
+
+  <div class="botbar"><span id="cloudStatus" class="pill">⏳ جاري الاتصال بالسحابة...</span><span id="bHome" class="pill" style="cursor:pointer;">🏠 الرئيسية</span></div>
+  <script type="module">
+    import { initializeApp } from "https://gstatic.com";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://gstatic.com";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyATwnDXmn0Lu3fPMndKtjI-dokqruvM3N4",
+      authDomain: "makhzana" + ".firebaseapp.com",
+
+
+      projectId: "makhzana",
+      storageBucket: "makhzana.firebasestorage.app",
+      messagingSenderId: "480829856218",
+      appId: "1:480829856218:web:7f92eb92c4dca33ecd08e3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const stateDocRef = doc(db, "makhzan_data", "main_store");
+
+    let products = JSON.parse(localStorage.getItem('sahl_products')) || [];
+    let accounts = JSON.parse(localStorage.getItem('sahl_accounts')) || [];
+    let invoices = JSON.parse(localStorage.getItem('sahl_invoices')) || [];
+    let logs = JSON.parse(localStorage.getItem('sahl_treasury_log')) || [];
+    let bal = JSON.parse(localStorage.getItem('sahl_balances')) || { drawer: 0, mainSafe: 0, damagesCost: 0 };
+    let storeInfo = JSON.parse(localStorage.getItem('sahl_store_info')) || { name: 'سهل لإدارة الأعمال', phone: '', address: '', footer: 'شكراً لتعاملكم معنا', adminPass: '1234', cashierPass: '0000' };
+    let currentRole = localStorage.getItem('sahl_role') || 'admin';
+    let cart = [], qr = null;
+
+    onSnapshot(stateDocRef, (snapshot) => {
+      document.getElementById('cloudStatus').innerText = '🟢 متصل بالسحابة';
+      if (snapshot.exists()) {
+        const d = snapshot.data();
+        products = d.products || []; accounts = d.accounts || []; invoices = d.invoices || [];
+        logs = d.logs || []; bal = d.bal || { drawer: 0, mainSafe: 0, damagesCost: 0 };
+        if (d.storeInfo) storeInfo = d.storeInfo;
+        saveLocal(); render();
+      } else save();
+    }, () => { document.getElementById('cloudStatus').innerText = '🟠 وضع محلي'; });
+
+    function saveLocal() {
+      try {
+        localStorage.setItem('sahl_products', JSON.stringify(products)); localStorage.setItem('sahl_accounts', JSON.stringify(accounts));
+        localStorage.setItem('sahl_invoices', JSON.stringify(invoices)); localStorage.setItem('sahl_treasury_log', JSON.stringify(logs));
+        localStorage.setItem('sahl_balances', JSON.stringify(bal)); localStorage.setItem('sahl_store_info', JSON.stringify(storeInfo));
+      } catch (e) {}
+    }
+
+    async function save() {
+      saveLocal(); render();
+      try { await setDoc(stateDocRef, { products, accounts, invoices, logs, bal, storeInfo, updatedAt: Date.now() }); document.getElementById('cloudStatus').innerText = '🟢 متصل بالسحابة'; }
+      catch (e) { document.getElementById('cloudStatus').innerText = '🟠 محفوظ محلياً'; }
+    }
+
+    function applyRole(role) {
+      currentRole = role; localStorage.setItem('sahl_role', role);
+      document.body.classList.toggle('role-cashier', role === 'cashier');
+      document.getElementById('roleBadge').innerText = role === 'cashier' ? 'الصلاحية: كاشير (بائع)' : 'الصلاحية: مدير النظام';
+      goHome();
+    }
+    function logMove(type, desc, amount) { logs.unshift({ date: new Date().toLocaleString('ar-EG'), type, desc, amount }); }
+    function openView(id, t) {
+      document.getElementById('dashboard').style.display = 'none';
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById('btnHome').style.display = 'inline-block';
+      if (id === 'v-pos' && t) {
+        document.getElementById('invType').value = t;
+        const names = { sale: 'فاتورة مبيعات', sale_return: 'مرتجع مبيعات', purchase: 'فاتورة مشتريات', purchase_return: 'مرتجع مشتريات' };
+        document.getElementById('posTitle').innerText = names[t];
+      }
+      if (id === 'v-set') {
+        document.getElementById('setStoreName').value = storeInfo.name; document.getElementById('setStorePhone').value = storeInfo.phone;
+        document.getElementById('setStoreAddress').value = storeInfo.address; document.getElementById('setStoreFooter').value = storeInfo.footer;
+        document.getElementById('setAdminPass').value = storeInfo.adminPass || '1234'; document.getElementById('setCashierPass').value = storeInfo.cashierPass || '0000';
+      }
+      render();
+    }
+    function goHome() {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('btnHome').style.display = 'none';
+    }
+    document.querySelectorAll('.tile').forEach(el => el.addEventListener('click', () => openView(el.getAttribute('data-v'), el.getAttribute('data-t'))));
+    document.getElementById('btnHome').addEventListener('click', goHome);
+    document.getElementById('bHome').addEventListener('click', goHome);
+
+    document.getElementById('btnSaveSettings').addEventListener('click', () => {
+      storeInfo.name = document.getElementById('setStoreName').value.trim() || 'سهل لإدارة الأعمال';
+      storeInfo.phone = document.getElementById('setStorePhone').value.trim(); storeInfo.address = document.getElementById('setStoreAddress').value.trim();
+      storeInfo.footer = document.getElementById('setStoreFooter').value.trim() || 'شكراً لتعاملكم معنا';
+      storeInfo.adminPass = document.getElementById('setAdminPass').value.trim() || '1234'; storeInfo.cashierPass = document.getElementById('setCashierPass').value.trim() || '0000';
+      save(); alert('تم الحفظ!');
+    });
+
+    document.getElementById('btnLock').addEventListener('click', () => { document.getElementById('unlockPass').value = ''; document.getElementById('lockBox').style.display = 'flex'; });
+    document.getElementById('btnUnlock').addEventListener('click', () => {
+      const v = document.getElementById('unlockPass').value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+      if (v === (storeInfo.adminPass || '1234')) { document.getElementById('lockBox').style.display = 'none'; applyRole('admin'); }
+      else if (v === (storeInfo.cashierPass || '0000')) { document.getElementById('lockBox').style.display = 'none'; applyRole('cashier'); }
+      else alert('رمز غير صحيح');
+    });
+
+    document.getElementById('btnAddProd').addEventListener('click', () => {
+      const name = document.getElementById('pName').value.trim(); if (!name) return;
+      products.push({ id: Date.now(), barcode: document.getElementById('pCode').value.trim() || '-', name, store: document.getElementById('pStore').value, qty: parseFloat(document.getElementById('pQty').value) || 0, expiry: document.getElementById('pExp').value || '-', buy: parseFloat(document.getElementById('pBuy').value) || 0, sell: parseFloat(document.getElementById('pSell').value) || 0 });
+      ['pCode', 'pName', 'pQty', 'pExp', 'pBuy', 'pSell'].forEach(i => document.getElementById(i).value = '');
+      save(); alert('تم الحفظ!');
+    });
+
+    document.getElementById('btnAddCart').addEventListener('click', () => {
+      const p = products.find(x => x.id == document.getElementById('invProdSelect').value);
+      const q = parseFloat(document.getElementById('invQtyInput').value) || 1;
+      if (!p) return;
+      const price = document.getElementById('invType').value.includes('purchase') ? p.buy : p.sell;
+      const ex = cart.find(c => c.id === p.id);
+      if (ex) ex.qty += q; else cart.push({ id: p.id, name: p.name, qty: q, price, buy: p.buy });
+      renderCart();
+    });
+    document.getElementById('btnClearCart').addEventListener('click', () => { cart = []; renderCart(); });
+    function renderCart() {
+      let tot = 0;
+      document.getElementById('cartBody').innerHTML = cart.map((c, idx) => { const s = c.qty * c.price; tot += s; return `<tr><td>${c.name}</td><td>${c.qty}</td><td>${c.price}</td><td>${s.toFixed(2)}</td><td><button onclick="window.delCart(${idx})" class="btn btn-sm c-red">✖</button></td></tr>`; }).join('');
+      document.getElementById('posTotal').innerText = tot.toFixed(2);
+    }
+    window.delCart = (i) => { cart.splice(i, 1); renderCart(); };
+
+    document.getElementById('btnSaveInv').addEventListener('click', () => {
+      if (!cart.length) return;
+      const type = document.getElementById('invType').value, pay = document.getElementById('payMethod').value, accId = document.getElementById('invAccount').value;
+      let total = 0, profit = 0;
+      cart.forEach(c => {
+        total += c.qty * c.price; const p = products.find(x => x.id === c.id);
+        if (p) {
+          if (type === 'sale') { p.qty -= c.qty; profit += (c.price - p.buy) * c.qty; }
+          else if (type === 'sale_return') { p.qty += c.qty; profit -= (c.price - p.buy) * c.qty; }
+          else if (type === 'purchase') p.qty += c.qty; else if (type === 'purchase_return') p.qty -= c.qty;
+        }
+      });
+      const acc = accounts.find(a => a.id == accId);
+      if (pay === 'cash') { bal.drawer += (type === 'sale' || type === 'purchase_return') ? total : -total; logMove('فاتورة نقدية', type, total); }
+      else if (acc) acc.balance += (type === 'sale' || type === 'purchase_return') ? total : -total;
+      invoices.unshift({ id: Date.now(), date: new Date().toLocaleString('ar-EG'), type, pay, party: acc ? acc.name : 'نقدي عام', items: [...cart], total, profit });
+      cart = []; renderCart(); save(); alert('تم ترحيل الفاتورة!');
+    });
+
+    document.getElementById('btnAddAcc').addEventListener('click', () => {
+      const name = document.getElementById('accName').value.trim(); if (!name) return;
+      accounts.push({ id: Date.now(), name, type: document.getElementById('accType').value, balance: parseFloat(document.getElementById('accBal').value) || 0 });
+      document.getElementById('accName').value = ''; document.getElementById('accBal').value = ''; save();
+    });
+
+    document.getElementById('btnSafeOp').addEventListener('click', () => {
+      const op = document.getElementById('safeOp').value, amt = parseFloat(document.getElementById('safeAmt').value) || 0, note = document.getElementById('safeNote').value.trim() || '-';
+      if (amt <= 0) return;
+      if (op === 'expense') { bal.drawer -= amt; logMove('مصروف', note, -amt); }
+      else if (op === 'to_safe') { bal.drawer -= amt; bal.mainSafe += amt; logMove('ترحيل', note, amt); }
+      else if (op === 'deposit') { bal.mainSafe += amt; logMove('إيداع', note, amt); }
+      document.getElementById('safeAmt').value = ''; document.getElementById('safeNote').value = ''; save();
+    });
+
+    window.delProd = (id) => { if (confirm('حذف؟')) { products = products.filter(p => p.id !== id); save(); } };
+    document.getElementById('searchBox')?.addEventListener('input', render);
+
+    function render() {
+      document.getElementById('topStoreName').innerText = storeInfo.name;
+      const q = (document.getElementById('searchBox')?.value || '').toLowerCase();
+      document.getElementById('invBody').innerHTML = products.filter(p => p.name.toLowerCase().includes(q) || p.barcode.includes(q)).map(p => `<tr class="${p.qty <= 3 ? 'low' : ''}"><td>${p.barcode}</td><td>${p.name}</td><td>${p.store}</td><td>${p.qty}</td><td>${p.buy}</td><td>${p.sell}</td><td><button onclick="window.delProd(${p.id})" class="btn btn-sm c-red">حذف</button></td></tr>`).join('');
+      const opts = products.map(p => `<option value="${p.id}">${p.name} (${p.qty}) - ${p.sell}</option>`).join('');
+      document.getElementById('invProdSelect').innerHTML = opts; document.getElementById('adjProd').innerHTML = opts;
+      document.getElementById('invAccount').innerHTML = '<option value="">-- عميل نقدي عام --</option>' + accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+      document.getElementById('accBody').innerHTML = accounts.map(a => `<tr><td>${a.name}</td><td>${a.type}</td><td>${a.balance.toFixed(2)}</td><td>-</td></tr>`).join('');
+      document.getElementById('invLogBody').innerHTML = invoices.map(i => `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.party}</td><td>${i.pay}</td><td>${i.total.toFixed(2)}</td><td>-</td></tr>`).join('');
+      document.getElementById('drawerVal').innerText = bal.drawer.toFixed(2); document.getElementById('safeVal').innerText = bal.mainSafe.toFixed(2);
+      document.getElementById('safeLogBody').innerHTML = logs.map(l => `<tr><td>${l.date}</td><td>${l.type}</td><td>${l.desc}</td><td>${l.amount}</td></tr>`).join('');
+      const totSales = invoices.filter(i => i.type === 'sale').reduce((s, i) => s + i.total, 0);
+      const totProfit = invoices.reduce((s, i) => s + (i.profit || 0), 0);
+      document.getElementById('repSummary').innerHTML = `<div class="pos-bar"><span>المبيعات:</span><strong>${totSales.toFixed(2)}</strong></div><div class="pos-bar"><span>الأرباح:</span><strong>${totProfit.toFixed(2)}</strong></div>`;
+    }
+    applyRole(currentRole); render();
+  </script>
+</body>
+</html>
