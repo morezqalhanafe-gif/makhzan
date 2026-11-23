@@ -139,3 +139,214 @@
       <div class="group-title">الحسابات والخزينة والتقارير</div>
       <div class="grid-tiles">
         <div class="tile c-purple" data-v="v-acc"><div><span class="t-title">العملاء والموردين</span><span class="t-sub">كشوف الحسابات</span></div><span class="t-ico">👥</span></div>
+  <script type="module">
+    import { initializeApp } from "https://gstatic.com";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://gstatic.com";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyATwnDXmn0Lu3fPMndKtjI-dokqruvM3N4",
+      authDomain: "://firebaseapp.com",
+      projectId: "makhzana",
+      storageBucket: "makhzana.firebasestorage.app",
+      messagingSenderId: "480829856218",
+      appId: "1:480829856218:web:7f92eb92c4dca33ecd08e3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const stateDocRef = doc(db, "makhzan_data", "main_store");
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+
+    let products = JSON.parse(localStorage.getItem('sahl_products')) || [];
+    let accounts = JSON.parse(localStorage.getItem('sahl_accounts')) || [];
+    let invoices = JSON.parse(localStorage.getItem('sahl_invoices')) || [];
+    let logs = JSON.parse(localStorage.getItem('sahl_treasury_log')) || [];
+    let bal = JSON.parse(localStorage.getItem('sahl_balances')) || { drawer: 0, mainSafe: 0, damagesCost: 0 };
+    let storeInfo = JSON.parse(localStorage.getItem('sahl_store_info')) || {
+      name: 'سهل لإدارة الأعمال',
+      phone: '',
+      address: '',
+      footer: 'شكراً لتعاملكم معنا',
+      adminPass: '1234',
+      cashierPass: '0000'
+    };
+    let currentRole = localStorage.getItem('sahl_role') || 'admin';
+    let cart = [], qr = null;
+
+    onSnapshot(stateDocRef, (snapshot) => {
+      document.getElementById('cloudStatus').innerText = '🟢 متصل بالسحابة';
+      if (snapshot.exists()) {
+        const d = snapshot.data();
+        products = d.products || [];
+        accounts = d.accounts || [];
+        invoices = d.invoices || [];
+        logs = d.logs || [];
+        bal = d.bal || { drawer: 0, mainSafe: 0, damagesCost: 0 };
+        if (d.storeInfo) storeInfo = d.storeInfo;
+        saveLocal();
+        render();
+      } else {
+        save();
+      }
+    }, () => {
+      document.getElementById('cloudStatus').innerText = '🟠 وضع محلي';
+    });
+
+    function saveLocal() {
+      try {
+        localStorage.setItem('sahl_products', JSON.stringify(products));
+        localStorage.setItem('sahl_accounts', JSON.stringify(accounts));
+        localStorage.setItem('sahl_invoices', JSON.stringify(invoices));
+        localStorage.setItem('sahl_treasury_log', JSON.stringify(logs));
+        localStorage.setItem('sahl_balances', JSON.stringify(bal));
+        localStorage.setItem('sahl_store_info', JSON.stringify(storeInfo));
+      } catch (e) {}
+    }
+
+    async function save() {
+      saveLocal();
+      render();
+      try {
+        await setDoc(stateDocRef, {
+          products, accounts, invoices, logs, bal, storeInfo, updatedAt: Date.now()
+        });
+      } catch (e) {
+        document.getElementById('cloudStatus').innerText = '🟠 محفوظ محلياً';
+      }
+    }
+
+    function applyRole(role) {
+      currentRole = role;
+      localStorage.setItem('sahl_role', role);
+      if (role === 'cashier') {
+        document.body.classList.add('role-cashier');
+        document.getElementById('roleBadge').innerText = 'الصلاحية: كاشير (بائع)';
+      } else {
+        document.body.classList.remove('role-cashier');
+        document.getElementById('roleBadge').innerText = 'الصلاحية: مدير النظام';
+      }
+      goHome();
+    }
+
+    function logMove(type, desc, amount) {
+      logs.unshift({ date: new Date().toLocaleString('ar-EG'), type, desc, amount });
+    }
+
+    function openView(id, t) {
+      document.getElementById('dashboard').style.display = 'none';
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById('btnHome').style.display = 'inline-block';
+      if (id === 'v-pos' && t) {
+        document.getElementById('invType').value = t;
+        const names = { sale: 'فاتورة مبيعات', sale_return: 'مرتجع مبيعات', purchase: 'فاتورة مشتريات', purchase_return: 'مرتجع مشتريات' };
+        document.getElementById('posTitle').innerText = names[t];
+      }
+      if (id === 'v-set') {
+        document.getElementById('setStoreName').value = storeInfo.name;
+        document.getElementById('setStorePhone').value = storeInfo.phone;
+        document.getElementById('setStoreAddress').value = storeInfo.address;
+        document.getElementById('setStoreFooter').value = storeInfo.footer;
+        document.getElementById('setAdminPass').value = storeInfo.adminPass || '1234';
+        document.getElementById('setCashierPass').value = storeInfo.cashierPass || '0000';
+      }
+    }
+
+    function goHome() {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('btnHome').style.display = 'none';
+    }
+
+    document.querySelectorAll('.tile').forEach(el => {
+      el.addEventListener('click', () => openView(el.getAttribute('data-v'), el.getAttribute('data-t')));
+    });
+    document.getElementById('btnHome').addEventListener('click', goHome);
+    document.getElementById('bHome').addEventListener('click', goHome);
+
+    document.getElementById('btnSaveSettings').addEventListener('click', () => {
+      storeInfo.name = document.getElementById('setStoreName').value.trim() || 'سهل لإدارة الأعمال';
+      storeInfo.phone = document.getElementById('setStorePhone').value.trim();
+      storeInfo.address = document.getElementById('setStoreAddress').value.trim();
+      storeInfo.footer = document.getElementById('setStoreFooter').value.trim() || 'شكراً لتعاملكم معنا';
+      storeInfo.adminPass = document.getElementById('setAdminPass').value.trim() || '1234';
+      storeInfo.cashierPass = document.getElementById('setCashierPass').value.trim() || '0000';
+      save();
+      alert('تم حفظ ومزامنة الإعدادات بنجاح!');
+    });
+
+    document.getElementById('btnLock').addEventListener('click', () => {
+      document.getElementById('unlockPass').value = '';
+      document.getElementById('lockBox').style.display = 'flex';
+    });
+    document.getElementById('btnUnlock').addEventListener('click', () => {
+      const v = document.getElementById('unlockPass').value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+      const adm = storeInfo.adminPass || '1234';
+      const csh = storeInfo.cashierPass || '0000';
+      if (v === adm) {
+        document.getElementById('lockBox').style.display = 'none';
+        applyRole('admin');
+      } else if (v === csh) {
+        document.getElementById('lockBox').style.display = 'none';
+        applyRole('cashier');
+      } else {
+        alert('رمز الدخول غير صحيح!');
+      }
+    });
+
+    function scan(mode) {
+      if (typeof Html5Qrcode === 'undefined') { alert('تأكد من الإنترنت'); return; }
+      document.getElementById('scanModal').style.display = 'flex';
+      qr = new Html5Qrcode("reader");
+      qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 220 }, code => {
+        stopScan();
+        if (mode === 'add') document.getElementById('pCode').value = code;
+        else if (mode === 'search') { document.getElementById('searchBox').value = code; render(); }
+        else if (mode === 'inv') {
+          const f = products.find(p => p.barcode === code);
+          if (f) addCart(f, 1); else alert('غير موجود: ' + code);
+        }
+      }, () => {}).catch(() => { alert('الكاميرا تعمل عبر HTTPS في Safari'); document.getElementById('scanModal').style.display = 'none'; });
+    }
+    function stopScan() {
+      if (qr) qr.stop().then(() => { qr.clear(); document.getElementById('scanModal').style.display = 'none'; }).catch(() => { document.getElementById('scanModal').style.display = 'none'; });
+      else document.getElementById('scanModal').style.display = 'none';
+    }
+    document.getElementById('btnCloseScan').addEventListener('click', stopScan);
+    document.getElementById('scanAdd').addEventListener('click', () => scan('add'));
+    document.getElementById('scanSearch').addEventListener('click', () => scan('search'));
+    document.getElementById('scanInv').addEventListener('click', () => scan('inv'));
+
+    document.getElementById('btnAddProd').addEventListener('click', () => {
+      const name = document.getElementById('pName').value.trim();
+      if (!name) { alert('أدخل اسم الصنف'); return; }
+      products.push({
+        id: Date.now(), barcode: document.getElementById('pCode').value.trim() || '-',
+        name, store: document.getElementById('pStore').value,
+        qty: parseFloat(document.getElementById('pQty').value) || 0,
+        expiry: document.getElementById('pExp').value || '-',
+        buy: parseFloat(document.getElementById('pBuy').value) || 0,
+        sell: parseFloat(document.getElementById('pSell').value) || 0
+      });
+      ['pCode', 'pName', 'pQty', 'pExp', 'pBuy', 'pSell'].forEach(i => document.getElementById(i).value = '');
+      save(); alert('تم الحفظ والمزامنة');
+    });
+
+    document.getElementById('btnAdj').addEventListener('click', () => {
+      const p = products.find(x => x.id == document.getElementById('adjProd').value);
+      const q = parseFloat(document.getElementById('adjQty').value) || 0;
+      const t = document.getElementById('adjType').value;
+      if (!p || q <= 0 || q > p.qty) { alert('كمية غير صحيحة'); return; }
+      p.qty -= q;
+      if (t === 'damage') {
+        bal.damagesCost += q * p.buy;
+        logMove('تلفيات', p.name + ' (' + q + ')', -(q * p.buy));
+      } else {
+        const st = t === 'sub' ? 'الفرعي' : 'الرئيسي';
+        const ex = products.find(x => x.name === p.name && x.store === st);
+        if (ex) ex.qty += q;
+        else products.push({ id: Date.now(), barcode: p.barcode, name: p.name, store: st, qty: q, expiry: p.expiry, buy: p.buy, sell: p.sell });
+      }
