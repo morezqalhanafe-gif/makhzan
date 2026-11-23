@@ -601,6 +601,18 @@ if (xlsBox && !document.getElementById('btnBackupAll')) {
     XLSX.writeFile(wb, "Sahl_Full_Backup_" + new Date().toISOString().slice(0,10) + ".xlsx");
   });
 }
+window.addEventListener('beforeunload', (e) => {
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+const topBar = document.querySelector('.topbar');
+if (topBar && !document.getElementById('btnExitBackup')) {
+  topBar.insertAdjacentHTML('beforeend', '<button type="button" id="btnExitBackup" class="btn btn-sm c-amber" style="width:auto;padding:6px 10px;">💾 خروج بنسخة</button>');
+  document.getElementById('btnExitBackup').addEventListener('click', () => {
+    if (confirm('هل تريد تحميل نسخة احتياطية كاملة قبل الخروج؟')) document.getElementById('btnBackupAll')?.click();
+  });
+}
 
       window.settleAcc = (id) => {
         const a = accounts.find(x => x.id === id);
