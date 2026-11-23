@@ -675,54 +675,52 @@ if (topBar && !document.getElementById('btnExitBackup')) {
         document.getElementById('printArea').innerHTML = `<h2>${storeInfo.name}</h2><p>${storeInfo.address} - ${storeInfo.phone}</p><hr><p>التاريخ: ${inv.date} | الطرف: ${inv.party}</p><table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${inv.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${(i.qty*i.price).toFixed(2)}</td></tr>`).join('')}</table><h3>الإجمالي: ${inv.total.toFixed(2)}</h3><p>${storeInfo.footer}</p>`;
         window.print();
       };
-const setBox = document.querySelector('#v-set .win-body');
-if (setBox && !document.getElementById('uManager')) {
-  setBox.insertAdjacentHTML('beforeend', `
-    <div id="uManager" style="margin-top:16px;padding-top:12px;border-top:2px solid #cbd5e1;">
-      <h4 style="margin-bottom:8px;color:#065f46;">👥 إضافة كاشير بصلاحيات مخصصة</h4>
-      <input id="uName" placeholder="اسم الكاشير (مثلاً: أحمد)" style="margin-bottom:6px;">
-      <input id="uPass" type="tel" placeholder="الرقم السري الخاص به" style="margin-bottom:8px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;margin-bottom:10px;">
-        <label><input type="checkbox" class="uPerm" value="v-possale" checked> فاتورة مبيعات</label>
-        <label><input type="checkbox" class="uPerm" value="v-possale_return"> مرتجع مبيعات</label>
-        <label><input type="checkbox" class="uPerm" value="v-pospurchase"> فاتورة مشتريات</label>
-        <label><input type="checkbox" class="uPerm" value="v-add"> تعريف الأصناف</label>
-        <label><input type="checkbox" class="uPerm" value="v-inv"> الجرد والمخازن</label>
-        <label><input type="checkbox" class="uPerm" value="v-log"> سجل الفواتير</label>
-        <label><input type="checkbox" class="uPerm" value="v-acc"> العملاء والموردين</label>
-        <label><input type="checkbox" class="uPerm" value="v-safe"> الخزينة والمصروفات</label>
-      </div>
-      <button type="button" id="btnAddUser" class="btn c-green">➕ حفظ الكاشير وصلاحياته</button>
-      <div id="uList" style="margin-top:10px;"></div>
-    </div>
-  `);
+const sb = document.querySelector('#v-set .win-body');
+if (sb && !document.getElementById('uBox')) {
+  const d = document.createElement('div');
+  d.id = 'uBox';
+  d.innerHTML = '<hr style="margin:12px 0;"><h4>👥 إضافة كاشير بصلاحيات</h4>' +
+    '<input id="uName" placeholder="اسم الكاشير">' +
+    '<input id="uPass" type="tel" placeholder="الرقم السري">' +
+    '<div id="uPerms" style="font-size:13px;margin:8px 0;"></div>' +
+    '<button type="button" id="btnAddUser" class="btn c-green">➕ حفظ الكاشير</button>' +
+    '<div id="uList" style="margin-top:8px;"></div>';
+  sb.appendChild(d);
+
+  const pList = [
+    ['v-possale', 'مبيعات'], ['v-possale_return', 'مرتجع بيع'],
+    ['v-pospurchase', 'مشتريات'], ['v-add', 'تعريف أصناف'],
+    ['v-inv', 'الجرد'], ['v-log', 'سجل الفواتير'],
+    ['v-acc', 'عملاء وموردين'], ['v-safe', 'الخزينة']
+  ];
+  document.getElementById('uPerms').innerHTML = pList.map(p =>
+    '<label style="display:inline-block;width:48%;"><input type="checkbox" class="uPerm" value="' + p[0] + '"> ' + p[1] + '</label>'
+  ).join('');
 
   window.renderUsers = () => {
-    document.getElementById('uList').innerHTML = users.map((u, idx) => `
-      <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:8px;border-radius:6px;margin-bottom:5px;border:1px solid #cbd5e1;">
-        <span><strong>${u.name}</strong> (رمز: ${u.pass}) - ${u.perms.length} صلاحيات</span>
-        <button onclick="window.delUser(${idx})" class="btn btn-sm c-red" style="width:auto;padding:4px 8px;">حذف</button>
-      </div>`).join('');
+    document.getElementById('uList').innerHTML = users.map((u, i) =>
+      '<div style="background:#fff;padding:6px;margin:4px 0;border:1px solid #ccc;display:flex;justify-content:space-between;">' +
+      '<span>' + u.name + ' (' + u.pass + ')</span>' +
+      '<button onclick="window.delUser(' + i + ')" class="btn btn-sm c-red" style="width:auto;">حذف</button></div>'
+    ).join('');
   };
-    window.delUser = (i) => { users.splice(i, 1); localStorage.setItem('sahl_users', JSON.stringify(users)); window.renderUsers(); };
+  window.delUser = (i) => { users.splice(i, 1); localStorage.setItem('sahl_users', JSON.stringify(users)); window.renderUsers(); };
 
-
-  document.getElementById('btnAddUser').addEventListener('click', () => {
+  document.getElementById('btnAddUser').onclick = () => {
     const name = document.getElementById('uName').value.trim();
-    const pass = document.getElementById('uPass').value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+    const pass = document.getElementById('uPass').value.replace(/[٠-٩]/g, x => '٠١٢٣٤٥٦٧٨٩'.indexOf(x)).trim();
     const perms = Array.from(document.querySelectorAll('.uPerm:checked')).map(c => c.value);
-    if (!name || !pass) { alert('أدخل الاسم والرقم السري'); return; }
+    if (!name || !pass) return alert('أدخل الاسم والرقم السري');
     users.push({ name, pass, perms });
     localStorage.setItem('sahl_users', JSON.stringify(users));
     document.getElementById('uName').value = ''; document.getElementById('uPass').value = '';
-    window.renderUsers(); alert('تم إضافة الكاشير بنجاح!');
-  });
+    window.renderUsers(); alert('تم الحفظ!');
+  };
   window.renderUsers();
 }
-
 applyRole(currentRole); render();
 }
-}
+
 initMakhzan();
 </script></body></html>
 
