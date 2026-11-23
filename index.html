@@ -65,10 +65,9 @@
     td { padding: 7px; border: 1px solid #cbd5e1; white-space: nowrap; }
     .low { background: #fee2e2 !important; color: #991b1b; font-weight: bold; }
 
-    .botbar { background: #07241e; color: #a7f3d0; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 12px; border-top: 1px solid #134e4a; position: sticky; bottom: 0; z-index: 90; }
-    .pill { background: #0d3b31; padding: 4px 10px; border-radius: 4px; border: 1px solid #148f72; }
+    .botbar { background: #07241e; color: #a7f3d0; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 11px; border-top: 1px solid #134e4a; position: sticky; bottom: 0; z-index: 90; }
+    .pill { background: #0d3b31; padding: 4px 8px; border-radius: 4px; border: 1px solid #148f72; }
 
-    /* إخفاء عناصر المدير عن الكاشير */
     body.role-cashier .admin-only { display: none !important; }
 
     #lockBox, #scanModal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
@@ -86,7 +85,6 @@
 </head>
 <body>
 
-  <!-- نافذة التبديل بين المدير والكاشير -->
   <div id="lockBox">
     <div class="lock-card">
       <div class="logo" style="display:inline-block; color:white; margin-bottom:10px;">سهل</div>
@@ -140,3 +138,4 @@
     <div class="group">
       <div class="group-title">الحسابات والخزينة والتقارير</div>
       <div class="grid-tiles">
+        <div class="tile c-purple" data-v="v-acc"><div><span class="t-title">العملاء والموردين</span><span class="t-sub">كشوف الحسابات</span></div><span class="t-ico">👥</span></div>
